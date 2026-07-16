@@ -14,6 +14,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0e7c66">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -215,6 +216,11 @@
     background: var(--warn-soft); color: var(--warn); border-radius: 99px; padding: 5px 12px;
   }
   #status { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  #auth-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--brand);
+    border-radius: 99px; flex: none; padding: 6px 14px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  }
+  #auth-btn:hover { border-color: var(--brand); }
   #timer-btn, #pomo-btn, #theme-btn {
     border: 1px solid var(--line); background: var(--surface); color: var(--ink);
     border-radius: 99px; flex: none;
@@ -416,8 +422,20 @@
   #tsearch::placeholder { color: var(--side-muted); }
 
   /* flashcards modal */
-  #flash { position: fixed; inset: 0; z-index: 60; background: rgba(16,20,18,0.55); display: grid; place-items: center; padding: 20px; }
-  #flash[hidden] { display: none; }
+  #flash, #auth { position: fixed; inset: 0; z-index: 60; background: rgba(16,20,18,0.55); display: grid; place-items: center; padding: 20px; }
+  #flash[hidden], #auth[hidden] { display: none; }
+  #auth-card {
+    position: relative; width: min(420px, 100%); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 16px; padding: 28px;
+    animation: fadeUp .3s cubic-bezier(.2,.7,.3,1) both;
+  }
+  #auth-x { position: absolute; top: 12px; right: 12px; border: none; background: none; color: var(--muted); font-size: 15px; cursor: pointer; }
+  #auth-card input {
+    width: 100%; font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--page); border: 1px solid var(--line); border-radius: 9px;
+    padding: 11px 14px; margin-bottom: 10px; outline: none;
+  }
+  #auth-card input:focus { border-color: var(--brand); }
   #flash-card {
     position: relative; width: min(520px, 100%); background: var(--surface);
     border: 1px solid var(--line); border-radius: 16px; padding: 28px;
@@ -513,6 +531,7 @@
       <button id="menu-btn" title="Course menu">☰</button>
       <span id="crumb"></span>
       <span class="streak-chip" id="streak-chip" style="display:none"></span>
+      <button id="auth-btn" style="display:none" title="Sync your progress across devices">Sign in</button>
       <button id="pomo-btn" title="Pomodoro: 25 min focus, 5 min break">Focus 25/5</button>
       <button id="timer-btn" title="Start / pause the study timer">0m</button>
       <button id="theme-btn" title="Toggle light / dark mode">🌙</button>
@@ -530,6 +549,17 @@
 
 <div id="side-veil"></div>
 <div id="flash" hidden><div id="flash-card"><button id="flash-x" data-flash="close" title="Close">✕</button><div id="flash-body"></div></div></div>
+<div id="auth" hidden><div id="auth-card"><button id="auth-x" title="Close">✕</button>
+  <div class="fmeta">Sync progress across devices</div>
+  <p class="fq">Sign in or create an account</p>
+  <input id="a-email" type="email" placeholder="Email" autocomplete="email">
+  <input id="a-pass" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
+  <div class="fbtns">
+    <button class="mini-btn" id="a-signup">Create account</button>
+    <button class="cta small" id="a-signin">Sign in</button>
+  </div>
+  <p class="empty" style="margin-top:12px">Your topics, solved problems, study time, XP and achievements sync automatically once signed in. Without an account everything still works - it just stays on this device.</p>
+</div></div>
 <div id="toast"></div>
 <canvas id="confetti"></canvas>
 <input type="file" id="import-file" accept=".json" style="display:none">
@@ -1642,6 +1672,92 @@ setInterval(load, 5000);
 
 // PWA: installable + offline
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// ── cloud sync (Supabase) ──
+// Fill these two values to enable sign-in + cross-device sync. The anon key is
+// designed to be public; row-level security keeps each user's data private.
+const SB_URL = '';
+const SB_KEY = '';
+
+const SYNC_JSON = { time: 'dsa-time', prog: 'dsa-prog', probs: 'dsa-probs', sr: 'dsa-sr', quest: 'dsa-quest', ach: 'dsa-ach' };
+const SYNC_NUM = { questn: 'dsa-questn', flashn: 'dsa-flashn', goal: 'dsa-goal' };
+function collectBlob() {
+  const b = {};
+  for (const [k, key] of Object.entries(SYNC_JSON)) b[k] = JSON.parse(localStorage.getItem(key) || (k === 'ach' ? '[]' : '{}'));
+  for (const [k, key] of Object.entries(SYNC_NUM)) b[k] = parseFloat(localStorage.getItem(key) || (k === 'goal' ? '5' : '0'));
+  return b;
+}
+function applyBlob(b) {
+  for (const [k, key] of Object.entries(SYNC_JSON)) if (b[k] !== undefined) localStorage.setItem(key, JSON.stringify(b[k]));
+  for (const [k, key] of Object.entries(SYNC_NUM)) if (b[k] !== undefined) localStorage.setItem(key, String(b[k]));
+  localProg = JSON.parse(localStorage.getItem('dsa-prog') || '{}');
+  if (lastMd) rebuild(false);
+}
+// union/max merge: nothing earned on either device is ever lost
+function mergeBlob(local, server) {
+  const out = {};
+  out.time = { ...(server.time || {}) };
+  for (const [day, topics] of Object.entries(local.time || {})) {
+    out.time[day] = { ...(out.time[day] || {}) };
+    for (const [k, v] of Object.entries(topics)) out.time[day][k] = Math.max(out.time[day][k] || 0, v);
+  }
+  out.probs = { ...(server.probs || {}) };
+  for (const [k, l] of Object.entries(local.probs || {})) out.probs[k] = [...new Set([...(out.probs[k] || []), ...l])];
+  out.ach = [...new Set([...(server.ach || []), ...(local.ach || [])])];
+  out.prog = { ...(server.prog || {}), ...(local.prog || {}) };
+  out.sr = { ...(server.sr || {}), ...(local.sr || {}) };
+  out.quest = ((local.quest || {}).date || '') >= ((server.quest || {}).date || '') ? (local.quest || {}) : server.quest;
+  out.questn = Math.max(local.questn || 0, server.questn || 0);
+  out.flashn = Math.max(local.flashn || 0, server.flashn || 0);
+  out.goal = local.goal || server.goal || 5;
+  return out;
+}
+
+let sb = null, sbUser = null, lastPushed = '';
+async function cloudPush(force) {
+  if (!sb || !sbUser) return;
+  const blob = collectBlob(), s = JSON.stringify(blob);
+  if (!force && s === lastPushed) return;
+  const { error } = await sb.from('user_data').upsert({ user_id: sbUser.id, data: blob, updated_at: new Date().toISOString() });
+  if (!error) lastPushed = s;
+}
+async function cloudPull() {
+  const { data: row } = await sb.from('user_data').select('data').eq('user_id', sbUser.id).maybeSingle();
+  applyBlob(mergeBlob(collectBlob(), (row && row.data) || {}));
+  await cloudPush(true);
+  toast('Progress synced across your devices.');
+}
+
+if (SB_URL && SB_KEY && window.supabase) {
+  sb = window.supabase.createClient(SB_URL, SB_KEY);
+  $('auth-btn').style.display = '';
+  sb.auth.onAuthStateChange((ev, session) => {
+    sbUser = (session && session.user) || null;
+    $('auth-btn').textContent = sbUser ? sbUser.email.split('@')[0] : 'Sign in';
+    $('auth-btn').title = sbUser ? 'Signed in as ' + sbUser.email + ' - click to sign out' : 'Sync your progress across devices';
+    if (ev === 'SIGNED_IN') cloudPull();
+  });
+  setInterval(() => cloudPush(false), 20000);
+  window.addEventListener('beforeunload', () => cloudPush(false));
+
+  $('auth-btn').addEventListener('click', () => {
+    if (sbUser) { if (confirm('Sign out? Your progress stays synced to your account.')) sb.auth.signOut(); }
+    else $('auth').hidden = false;
+  });
+  $('auth-x').addEventListener('click', () => { $('auth').hidden = true; });
+  const authGo = async kind => {
+    const email = $('a-email').value.trim(), password = $('a-pass').value;
+    if (!email || password.length < 8) { toast('Enter your email and a password of 8+ characters.'); return; }
+    const { error } = kind === 'up'
+      ? await sb.auth.signUp({ email, password })
+      : await sb.auth.signInWithPassword({ email, password });
+    if (error) { toast(error.message); return; }
+    $('auth').hidden = true;
+  };
+  $('a-signin').addEventListener('click', () => authGo('in'));
+  $('a-signup').addEventListener('click', () => authGo('up'));
+  $('a-pass').addEventListener('keydown', e => { if (e.key === 'Enter') authGo('in'); });
+}
 </script>
 </body>
 </html>
