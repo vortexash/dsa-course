@@ -107,10 +107,8 @@
   }
 
   #layout { display: grid; grid-template-columns: 296px 1fr; min-height: 100vh; }
-  @media (max-width: 920px) {
-    #layout { grid-template-columns: 1fr; }
-    #side { position: static; max-height: none; height: auto; }
-  }
+  #menu-btn { display: none; }
+  #side-veil { display: none; }
 
   /* ─ sidebar ─ */
   #side {
@@ -361,6 +359,38 @@
 
   #error { display: none; margin: 24px; border-left: 4px solid var(--warn); }
   #error code { background: var(--brand-soft); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+  /* ─ mobile ─ */
+  @media (max-width: 920px) {
+    #layout { grid-template-columns: 1fr; }
+    #side {
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 30;
+      width: min(320px, 86vw); height: 100vh;
+      transform: translateX(-105%); transition: transform .25s ease;
+      box-shadow: 0 0 40px rgba(16,24,40,0.35);
+    }
+    #side.open { transform: none; }
+    #side-veil { position: fixed; inset: 0; background: rgba(16,24,40,0.45); z-index: 25; }
+    #side-veil.show { display: block; }
+    #menu-btn {
+      display: grid; place-items: center; flex: none;
+      width: 34px; height: 34px; border-radius: 99px; font-size: 16px; line-height: 1;
+      border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    }
+    #topbar { padding: 10px 14px; gap: 8px; }
+    #crumb { flex: 1; }
+    #status, .streak-chip { display: none !important; }
+    #main { padding: 18px 14px 40px; }
+    .hero { padding: 22px 18px; gap: 18px; }
+    .hero h1 { font-size: 20px; }
+    .t-title-row h1 { font-size: 21px; }
+    #foot { padding: 14px; gap: 12px; }
+    .nav-btn { max-width: none; flex: 1; }
+    .card { padding: 16px; }
+  }
+  @media (max-width: 480px) {
+    #pomo-btn { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -378,6 +408,7 @@
   <nav id="side"></nav>
   <div id="main-wrap">
     <div id="topbar">
+      <button id="menu-btn" title="Course menu">☰</button>
       <span id="crumb"></span>
       <span class="streak-chip" id="streak-chip" style="display:none"></span>
       <button id="pomo-btn" title="Pomodoro: 25 min focus, 5 min break">Focus 25/5</button>
@@ -395,6 +426,7 @@
   </div>
 </div>
 
+<div id="side-veil"></div>
 <div id="toast"></div>
 <canvas id="confetti"></canvas>
 <input type="file" id="import-file" accept=".json" style="display:none">
@@ -772,10 +804,15 @@ function applyOverrides(d) {
 function allTopics() { return data.phases.flatMap(p => p.topics); }
 function curNum() { return (data.current || '').match(/\d+/)?.[0]; }
 
+function closeSide() {
+  $('side').classList.remove('open');
+  $('side-veil').classList.remove('show');
+}
 function select(next) {
   timerFlush(); // credit elapsed time to the topic we're leaving
   sel = next;
   localStorage.setItem('dsa-sel', sel);
+  closeSide();
   renderAll();
   window.scrollTo({ top: 0 });
 }
@@ -1156,6 +1193,11 @@ $('import-file').addEventListener('change', e => {
 });
 
 // topbar buttons
+$('menu-btn').addEventListener('click', () => {
+  $('side').classList.add('open');
+  $('side-veil').classList.add('show');
+});
+$('side-veil').addEventListener('click', closeSide);
 $('theme-btn').textContent = effTheme() === 'dark' ? '☀️' : '🌙';
 $('theme-btn').addEventListener('click', () => applyTheme(effTheme() === 'dark' ? 'light' : 'dark'));
 $('timer-btn').addEventListener('click', toggleTimer);
