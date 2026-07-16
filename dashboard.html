@@ -89,6 +89,21 @@
     display: grid; place-items: center; flex: none;
   }
   #theme-btn:hover { border-color: var(--brand); }
+  #timer-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 99px; padding: 6px 14px; font-size: 12.5px; font-weight: 700;
+    font-variant-numeric: tabular-nums; white-space: nowrap; flex: none;
+  }
+  #timer-btn:hover { border-color: var(--brand); }
+  #timer-btn.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .t-time { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+
+  /* 7-day study time chart */
+  .tchart { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 8px; }
+  .tcol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .tbar { width: 100%; max-width: 42px; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, var(--brand), var(--brand-2)); min-height: 2px; }
+  .tcol span { font-size: 10.5px; color: var(--muted); text-align: center; line-height: 1.3; }
+  .tcol b { font-size: 10.5px; color: var(--ink-2); }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--page); color: var(--ink); }
@@ -325,6 +340,7 @@
     <div id="topbar">
       <span id="crumb"></span>
       <span class="streak-chip" id="streak-chip" style="display:none"></span>
+      <button id="timer-btn" title="Start/pause the study timer">⏱ 0m ▶</button>
       <button id="theme-btn" title="Toggle light / dark mode">🌙</button>
       <span id="status"></span>
     </div>
@@ -575,6 +591,48 @@ function streak(dates) {
   return n;
 }
 
+// ── study timer ─────────────────────────────────────
+// Per-day per-topic seconds in localStorage 'dsa-time': { "2026-07-16": { "7": 1830 } }
+// Counts only while running and the page is open. Local to this browser.
+const fmtT = s => s >= 3600 ? Math.floor(s/3600) + 'h ' + Math.floor(s%3600/60) + 'm'
+                            : s >= 60 ? Math.floor(s/60) + 'm' : s + 's';
+const timeData = () => JSON.parse(localStorage.getItem('dsa-time') || '{}');
+function addTime(topic, secs) {
+  if (secs <= 0) return;
+  const d = timeData(), k = iso(new Date());
+  d[k] = d[k] || {};
+  d[k][topic] = (d[k][topic] || 0) + secs;
+  localStorage.setItem('dsa-time', JSON.stringify(d));
+}
+const dayTotal = k => Object.values(timeData()[k] || {}).reduce((a, b) => a + b, 0);
+const topicTotal = num => Object.values(timeData()).reduce((a, day) => a + (day[num] || 0), 0);
+
+let timerOn = false, lastTick = 0;
+function timerFlush() {
+  if (!timerOn) return;
+  const now = Date.now();
+  addTime(sel && sel !== 'home' ? sel : '0', Math.round((now - lastTick) / 1000));
+  lastTick = now;
+}
+function timerLabel() {
+  const btn = $('timer-btn');
+  if (!btn) return;
+  const t = dayTotal(iso(new Date())) + (timerOn ? Math.round((Date.now() - lastTick) / 1000) : 0);
+  btn.textContent = '⏱ ' + fmtT(t) + (timerOn ? ' ⏸' : ' ▶');
+  btn.classList.toggle('on', timerOn);
+}
+setInterval(() => { if (timerOn && Date.now() - lastTick > 30000) timerFlush(); timerLabel(); }, 1000);
+window.addEventListener('beforeunload', timerFlush);
+document.addEventListener('visibilitychange', () => { if (document.hidden) timerFlush(); });
+document.addEventListener('DOMContentLoaded', () => {
+  timerLabel();
+  $('timer-btn').addEventListener('click', () => {
+    if (timerOn) { timerFlush(); timerOn = false; }
+    else { timerOn = true; lastTick = Date.now(); }
+    timerLabel();
+  });
+});
+
 // ── state ───────────────────────────────────────────
 let guide = null, lastMd = '', data = null;
 let sel = localStorage.getItem('dsa-sel') || ''; // topic num, or 'home'
@@ -586,6 +644,7 @@ function allTopics() { return data.phases.flatMap(p => p.topics); }
 function curNum() { return (data.current || '').match(/\d+/)?.[0]; }
 
 function select(next) {
+  timerFlush(); // credit elapsed time to the topic we're leaving
   sel = next;
   localStorage.setItem('dsa-sel', sel);
   renderSide(); renderMain(); renderCrumb();
@@ -649,10 +708,13 @@ function topicView(t, phaseName, phaseIdx) {
   const linkList = arr => '<div class="link-list">' + arr.map(b =>
     '<a href="' + b.u + '" target="_blank" rel="noopener"><span class="ico">↗</span>' + esc(b.t) + '</a>').join('') + '</div>';
 
+  const spent = topicTotal(t.num);
   return '<div class="t-head">' +
     '<div class="t-kicker">Module ' + (phaseIdx + 1) + ' - ' + esc(phaseName) + '</div>' +
     '<div class="t-title-row"><h1>' + t.num + '. ' + esc(t.title) + '</h1>' +
-    '<span class="badge ' + t.status + '">' + CHIP[t.status] + '</span></div></div>' +
+    '<span class="badge ' + t.status + '">' + CHIP[t.status] + '</span>' +
+    (spent ? '<span class="t-time">⏱ ' + fmtT(spent) + ' studied</span>' : '') +
+    '</div></div>' +
     vidHtml +
     (res && res.detail.length
       ? '<div class="card"><h3>📚 What you\'ll learn</h3><div class="learn-body">' + res.detail.map(linkify).join('<br>') + '</div></div>'
@@ -670,6 +732,24 @@ function topicView(t, phaseName, phaseIdx) {
     '<a class="suggest" target="_blank" rel="noopener" href="https://github.com/vortexash/dsa-course/issues/new?template=resource-suggestion.yml&title=' +
     encodeURIComponent('[Resource] Topic ' + t.num + ': ' + t.title) +
     '">➕ Found a great resource for this topic? Suggest it (opens a GitHub form)</a>';
+}
+
+// 7-day study time bar chart (pure CSS, no libraries)
+function timeChart() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = iso(d);
+    days.push({ k, label: d.toLocaleDateString(undefined, { weekday: 'short' }), secs: dayTotal(k) });
+  }
+  const max = Math.max(...days.map(d => d.secs), 1);
+  const total = days.reduce((a, d) => a + d.secs, 0);
+  if (!total) return '<p class="empty">No study time logged yet - hit the ⏱ button in the top bar when you start studying.</p>';
+  return '<div class="tchart">' + days.map(d =>
+    '<div class="tcol"><b>' + (d.secs ? fmtT(d.secs) : '') + '</b>' +
+    '<div class="tbar" style="height:' + Math.round(d.secs / max * 80) + 'px"></div>' +
+    '<span>' + d.label + '</span></div>').join('') + '</div>' +
+    '<div class="act-note">Total this week: ' + fmtT(total) + '</div>';
 }
 
 // ── dashboard (overview) page ───────────────────────
@@ -721,6 +801,7 @@ function homeView() {
     stat('📘', active, 'In progress') +
     stat('⭐', starred, 'Marked for revision') +
     stat('🔥', st, 'Day streak') +
+    stat('⏱', fmtT(dayTotal(iso(new Date()))), 'Studied today') +
     '</div>' +
 
     '<div class="sec-title">Modules</div><div class="mods">' +
@@ -735,7 +816,9 @@ function homeView() {
         '<button data-go="' + target.num + '">' + (complete ? 'Review ↺' : d || p.topics.some(t => t.status === 'active') ? 'Continue →' : 'Start →') + '</button></div>';
     }).join('') + '</div>' +
 
-    '<div class="sec-title">Your activity</div><div class="grid2">' +
+    '<div class="sec-title">Your activity</div>' +
+    '<div class="card"><h3>⏱ Study time - last 7 days</h3>' + timeChart() + '</div>' +
+    '<div class="grid2">' +
     '<div class="card"><h3>📆 Last 12 weeks</h3><div id="activity">' + cells + '</div>' +
     '<div class="act-note">One square per day · darker = more sessions · ' + data.sessions.length + ' sessions logged</div></div>' +
     '<div class="card"><h3>⭐ Revision queue</h3><ul class="plain">' +
