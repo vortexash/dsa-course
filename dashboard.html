@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DSA Mastery - Course</title>
+<meta name="description" content="Free, open-source DSA course: 27 topics with videos, visualizers, curated problems, XP and achievements. Nothing locked.">
+<meta property="og:title" content="DSA Mastery - free, open-source DSA course">
+<meta property="og:description" content="27 topics with videos, visualizers, curated problems, spaced repetition, XP and achievements. No paywall, no signup.">
+<meta property="og:image" content="https://vortexash.github.io/dsa-course/og.png">
+<meta property="og:url" content="https://vortexash.github.io/dsa-course/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0e7c66">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -376,6 +386,50 @@
   #error { display: none; margin: 24px; border-left: 4px solid var(--warn); }
   #error code { background: var(--brand-soft); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 
+  /* problems checklist */
+  .prob { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; cursor: pointer; }
+  .prob:last-child { border-bottom: none; }
+  .prob input { width: 17px; height: 17px; accent-color: var(--brand); flex: none; cursor: pointer; }
+  .prob a { color: var(--ink); font-weight: 500; flex: 1; }
+  .prob a:hover { color: var(--brand); }
+  .prob input:checked ~ a { color: var(--muted); text-decoration: line-through; }
+  .diff { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; flex: none; }
+  .diff.E { background: var(--good-soft); color: var(--good-text); }
+  .diff.M { background: var(--warn-soft); color: var(--warn); }
+  .diff.H { background: #fdecea; color: #c0392b; }
+  :root[data-theme="dark"] .diff.H { background: #33201d; color: #e07b6a; }
+
+  /* quest + review queue */
+  .quest-done { color: var(--good-text); font-size: 13px; font-weight: 600; }
+  .rev-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; flex-wrap: wrap; }
+  .rev-row:last-child { border-bottom: none; }
+  .rev-round { font-style: normal; font-size: 11px; color: var(--muted); }
+
+  /* sidebar search */
+  .side-search { padding: 12px 16px 2px; }
+  #tsearch {
+    width: 100%; font: inherit; font-size: 13px; color: var(--side-strong);
+    background: var(--side-hover); border: 1px solid var(--side-line); border-radius: 8px;
+    padding: 8px 12px; outline: none;
+  }
+  #tsearch:focus { border-color: var(--brand); }
+  #tsearch::placeholder { color: var(--side-muted); }
+
+  /* flashcards modal */
+  #flash { position: fixed; inset: 0; z-index: 60; background: rgba(16,20,18,0.55); display: grid; place-items: center; padding: 20px; }
+  #flash-card {
+    position: relative; width: min(520px, 100%); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 16px; padding: 28px;
+    animation: fadeUp .3s cubic-bezier(.2,.7,.3,1) both;
+  }
+  #flash-x { position: absolute; top: 12px; right: 12px; border: none; background: none; color: var(--muted); font-size: 15px; }
+  #flash-x:hover { color: var(--ink); }
+  .fmeta { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .fq { font-size: 19px; font-weight: 700; line-height: 1.4; margin-bottom: 16px; }
+  .fa { font-size: 14px; line-height: 1.7; color: var(--ink-2); background: var(--page); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+  .fbtns { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .cta.small { padding: 9px 16px; font-size: 13px; background: var(--brand); color: #fff; border-radius: 8px; border: none; font-weight: 700; }
+
   /* ─ motion ─ */
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -474,6 +528,7 @@
 </div>
 
 <div id="side-veil"></div>
+<div id="flash" hidden><div id="flash-card"><button id="flash-x" data-flash="close" title="Close">✕</button><div id="flash-body"></div></div></div>
 <div id="toast"></div>
 <canvas id="confetti"></canvas>
 <input type="file" id="import-file" accept=".json" style="display:none">
@@ -635,6 +690,38 @@ const VISUAL = {
   27: [{t:'MathsIsFun - interactive Pascal\'s triangle', u:'https://www.mathsisfun.com/pascals-triangle.html'}, {t:'MathsIsFun - combinations & permutations, interactive', u:'https://www.mathsisfun.com/combinatorics/combinations-permutations.html'}],
 };
 
+// Core problem checklist per topic - the canonical problems everyone solves.
+// u = LeetCode slug, d = difficulty. Checked state lives in localStorage.
+const PROBLEMS = {
+  2:  [{n:'Palindrome Number',u:'palindrome-number',d:'E'},{n:'Reverse Integer',u:'reverse-integer',d:'M'},{n:'Fizz Buzz',u:'fizz-buzz',d:'E'},{n:'Count Primes',u:'count-primes',d:'M'}],
+  3:  [{n:'Fibonacci Number',u:'fibonacci-number',d:'E'},{n:'Climbing Stairs',u:'climbing-stairs',d:'E'},{n:'Reverse String',u:'reverse-string',d:'E'},{n:'Pow(x, n)',u:'powx-n',d:'M'}],
+  4:  [{n:'Two Sum',u:'two-sum',d:'E'},{n:'Contains Duplicate',u:'contains-duplicate',d:'E'},{n:'Valid Anagram',u:'valid-anagram',d:'E'},{n:'Group Anagrams',u:'group-anagrams',d:'M'},{n:'Top K Frequent Elements',u:'top-k-frequent-elements',d:'M'},{n:'Longest Consecutive Sequence',u:'longest-consecutive-sequence',d:'M'}],
+  5:  [{n:'Sort an Array (implement it yourself)',u:'sort-an-array',d:'M'},{n:'Sort Colors',u:'sort-colors',d:'M'},{n:'Merge Intervals',u:'merge-intervals',d:'M'},{n:'Kth Largest Element in an Array',u:'kth-largest-element-in-an-array',d:'M'}],
+  6:  [{n:'Best Time to Buy and Sell Stock',u:'best-time-to-buy-and-sell-stock',d:'E'},{n:'Maximum Subarray',u:'maximum-subarray',d:'M'},{n:'Product of Array Except Self',u:'product-of-array-except-self',d:'M'},{n:'Majority Element',u:'majority-element',d:'E'},{n:'Rotate Array',u:'rotate-array',d:'M'},{n:'Next Permutation',u:'next-permutation',d:'M'},{n:'Subarray Sum Equals K',u:'subarray-sum-equals-k',d:'M'}],
+  7:  [{n:'Binary Search',u:'binary-search',d:'E'},{n:'Search in Rotated Sorted Array',u:'search-in-rotated-sorted-array',d:'M'},{n:'Find First and Last Position in Sorted Array',u:'find-first-and-last-position-of-element-in-sorted-array',d:'M'},{n:'Koko Eating Bananas',u:'koko-eating-bananas',d:'M'},{n:'Search a 2D Matrix',u:'search-a-2d-matrix',d:'M'},{n:'Median of Two Sorted Arrays',u:'median-of-two-sorted-arrays',d:'H'}],
+  8:  [{n:'Valid Palindrome',u:'valid-palindrome',d:'E'},{n:'Longest Common Prefix',u:'longest-common-prefix',d:'E'},{n:'Roman to Integer',u:'roman-to-integer',d:'E'},{n:'String to Integer (atoi)',u:'string-to-integer-atoi',d:'M'},{n:'Longest Palindromic Substring',u:'longest-palindromic-substring',d:'M'}],
+  9:  [{n:'Reverse Linked List',u:'reverse-linked-list',d:'E'},{n:'Middle of the Linked List',u:'middle-of-the-linked-list',d:'E'},{n:'Linked List Cycle',u:'linked-list-cycle',d:'E'},{n:'Merge Two Sorted Lists',u:'merge-two-sorted-lists',d:'E'},{n:'Remove Nth Node From End of List',u:'remove-nth-node-from-end-of-list',d:'M'},{n:'Reorder List',u:'reorder-list',d:'M'},{n:'Add Two Numbers',u:'add-two-numbers',d:'M'},{n:'Copy List with Random Pointer',u:'copy-list-with-random-pointer',d:'M'}],
+  10: [{n:'Subsets',u:'subsets',d:'M'},{n:'Permutations',u:'permutations',d:'M'},{n:'Combination Sum',u:'combination-sum',d:'M'},{n:'Word Search',u:'word-search',d:'M'},{n:'Palindrome Partitioning',u:'palindrome-partitioning',d:'M'},{n:'Letter Combinations of a Phone Number',u:'letter-combinations-of-a-phone-number',d:'M'},{n:'N-Queens',u:'n-queens',d:'H'}],
+  11: [{n:'Single Number',u:'single-number',d:'E'},{n:'Number of 1 Bits',u:'number-of-1-bits',d:'E'},{n:'Counting Bits',u:'counting-bits',d:'E'},{n:'Reverse Bits',u:'reverse-bits',d:'E'},{n:'Missing Number',u:'missing-number',d:'E'},{n:'Sum of Two Integers',u:'sum-of-two-integers',d:'M'},{n:'Power of Two',u:'power-of-two',d:'E'}],
+  12: [{n:'Valid Parentheses',u:'valid-parentheses',d:'E'},{n:'Min Stack',u:'min-stack',d:'M'},{n:'Daily Temperatures',u:'daily-temperatures',d:'M'},{n:'Next Greater Element I',u:'next-greater-element-i',d:'E'},{n:'Implement Queue using Stacks',u:'implement-queue-using-stacks',d:'E'},{n:'Largest Rectangle in Histogram',u:'largest-rectangle-in-histogram',d:'H'},{n:'LRU Cache',u:'lru-cache',d:'M'},{n:'Sliding Window Maximum',u:'sliding-window-maximum',d:'H'}],
+  13: [{n:'Two Sum II - Sorted Array',u:'two-sum-ii-input-array-is-sorted',d:'M'},{n:'3Sum',u:'3sum',d:'M'},{n:'Container With Most Water',u:'container-with-most-water',d:'M'},{n:'Longest Substring Without Repeating Characters',u:'longest-substring-without-repeating-characters',d:'M'},{n:'Longest Repeating Character Replacement',u:'longest-repeating-character-replacement',d:'M'},{n:'Minimum Window Substring',u:'minimum-window-substring',d:'H'},{n:'Trapping Rain Water',u:'trapping-rain-water',d:'H'}],
+  14: [{n:'Kth Largest Element in a Stream',u:'kth-largest-element-in-a-stream',d:'E'},{n:'Last Stone Weight',u:'last-stone-weight',d:'E'},{n:'K Closest Points to Origin',u:'k-closest-points-to-origin',d:'M'},{n:'Task Scheduler',u:'task-scheduler',d:'M'},{n:'Find Median from Data Stream',u:'find-median-from-data-stream',d:'H'},{n:'Merge k Sorted Lists',u:'merge-k-sorted-lists',d:'H'}],
+  15: [{n:'Assign Cookies',u:'assign-cookies',d:'E'},{n:'Jump Game',u:'jump-game',d:'M'},{n:'Jump Game II',u:'jump-game-ii',d:'M'},{n:'Gas Station',u:'gas-station',d:'M'},{n:'Non-overlapping Intervals',u:'non-overlapping-intervals',d:'M'},{n:'Insert Interval',u:'insert-interval',d:'M'},{n:'Candy',u:'candy',d:'H'}],
+  16: [{n:'Maximum Depth of Binary Tree',u:'maximum-depth-of-binary-tree',d:'E'},{n:'Invert Binary Tree',u:'invert-binary-tree',d:'E'},{n:'Diameter of Binary Tree',u:'diameter-of-binary-tree',d:'E'},{n:'Binary Tree Level Order Traversal',u:'binary-tree-level-order-traversal',d:'M'},{n:'Lowest Common Ancestor of a Binary Tree',u:'lowest-common-ancestor-of-a-binary-tree',d:'M'},{n:'Construct Tree from Preorder and Inorder',u:'construct-binary-tree-from-preorder-and-inorder-traversal',d:'M'},{n:'Binary Tree Maximum Path Sum',u:'binary-tree-maximum-path-sum',d:'H'},{n:'Serialize and Deserialize Binary Tree',u:'serialize-and-deserialize-binary-tree',d:'H'}],
+  17: [{n:'Validate Binary Search Tree',u:'validate-binary-search-tree',d:'M'},{n:'Kth Smallest Element in a BST',u:'kth-smallest-element-in-a-bst',d:'M'},{n:'Lowest Common Ancestor of a BST',u:'lowest-common-ancestor-of-a-binary-search-tree',d:'M'},{n:'Insert into a BST',u:'insert-into-a-binary-search-tree',d:'M'},{n:'Delete Node in a BST',u:'delete-node-in-a-bst',d:'M'},{n:'Sorted Array to BST',u:'convert-sorted-array-to-binary-search-tree',d:'E'}],
+  18: [{n:'Number of Islands',u:'number-of-islands',d:'M'},{n:'Flood Fill',u:'flood-fill',d:'E'},{n:'Rotting Oranges',u:'rotting-oranges',d:'M'},{n:'Course Schedule',u:'course-schedule',d:'M'},{n:'Course Schedule II',u:'course-schedule-ii',d:'M'},{n:'Is Graph Bipartite?',u:'is-graph-bipartite',d:'M'},{n:'Clone Graph',u:'clone-graph',d:'M'},{n:'Surrounded Regions',u:'surrounded-regions',d:'M'}],
+  19: [{n:'Network Delay Time',u:'network-delay-time',d:'M'},{n:'Cheapest Flights Within K Stops',u:'cheapest-flights-within-k-stops',d:'M'},{n:'Min Cost to Connect All Points',u:'min-cost-to-connect-all-points',d:'M'},{n:'Number of Provinces',u:'number-of-provinces',d:'M'},{n:'Redundant Connection',u:'redundant-connection',d:'M'},{n:'Accounts Merge',u:'accounts-merge',d:'M'},{n:'Critical Connections in a Network',u:'critical-connections-in-a-network',d:'H'}],
+  20: [{n:'House Robber',u:'house-robber',d:'M'},{n:'Coin Change',u:'coin-change',d:'M'},{n:'Longest Increasing Subsequence',u:'longest-increasing-subsequence',d:'M'},{n:'Longest Common Subsequence',u:'longest-common-subsequence',d:'M'},{n:'Unique Paths',u:'unique-paths',d:'M'},{n:'Partition Equal Subset Sum',u:'partition-equal-subset-sum',d:'M'},{n:'Edit Distance',u:'edit-distance',d:'M'},{n:'Best Time to Buy/Sell Stock with Cooldown',u:'best-time-to-buy-and-sell-stock-with-cooldown',d:'M'},{n:'Burst Balloons',u:'burst-balloons',d:'H'}],
+  21: [{n:'Implement Trie (Prefix Tree)',u:'implement-trie-prefix-tree',d:'M'},{n:'Design Add and Search Words',u:'design-add-and-search-words-data-structure',d:'M'},{n:'Maximum XOR of Two Numbers',u:'maximum-xor-of-two-numbers-in-an-array',d:'M'},{n:'Word Search II',u:'word-search-ii',d:'H'}],
+  22: [{n:'Find the Index of the First Occurrence (KMP)',u:'find-the-index-of-the-first-occurrence-in-a-string',d:'E'},{n:'Repeated Substring Pattern',u:'repeated-substring-pattern',d:'E'},{n:'Longest Happy Prefix (LPS array)',u:'longest-happy-prefix',d:'H'},{n:'Shortest Palindrome',u:'shortest-palindrome',d:'H'}],
+  23: [{n:'Range Sum Query - Mutable',u:'range-sum-query-mutable',d:'M'},{n:'My Calendar I',u:'my-calendar-i',d:'M'},{n:'Count of Smaller Numbers After Self',u:'count-of-smaller-numbers-after-self',d:'H'}],
+  24: [{n:'Range Sum Query - Mutable (with a BIT)',u:'range-sum-query-mutable',d:'M'},{n:'Count of Smaller Numbers After Self',u:'count-of-smaller-numbers-after-self',d:'H'},{n:'Reverse Pairs',u:'reverse-pairs',d:'H'}],
+  26: [{n:'Count Primes (sieve)',u:'count-primes',d:'M'},{n:'Greatest Common Divisor of Strings',u:'greatest-common-divisor-of-strings',d:'E'},{n:'Pow(x, n) (fast exponentiation)',u:'powx-n',d:'M'},{n:'Super Pow',u:'super-pow',d:'M'}],
+  27: [{n:'Pascal\'s Triangle',u:'pascals-triangle',d:'E'},{n:'Pascal\'s Triangle II',u:'pascals-triangle-ii',d:'E'},{n:'Combinations',u:'combinations',d:'M'},{n:'Unique Paths (count with nCr)',u:'unique-paths',d:'M'}],
+};
+const probsData = () => JSON.parse(localStorage.getItem('dsa-probs') || '{}');
+const probsSolvedCount = () => Object.values(probsData()).reduce((a, l) => a + l.length, 0);
+
 // ── markdown parsers ──
 // resource-guide.md → { topics: {num: {detail[], layers[]}}, toolkit: [] }
 function parseGuide(md) {
@@ -790,6 +877,7 @@ function timerFlush() {
   const now = Date.now();
   addTime(sel && sel !== 'home' ? sel : '0', Math.round((now - lastTick) / 1000));
   lastTick = now;
+  if (data) questCheck(); // the daily quest can complete mid-session
 }
 function pomoNext() {
   if (pomoPhase === 'work') {
@@ -845,7 +933,10 @@ function gameStats() {
   const td = timeData();
   const totalTime = Object.keys(td).reduce((a, k) => a + dayTotal(k), 0);
   const maxDay = Object.keys(td).reduce((a, k) => Math.max(a, dayTotal(k)), 0);
-  const xp = Math.floor(totalTime / 60) + done * 50 + mods * 200 + st * 10;
+  const xp = Math.floor(totalTime / 60) + done * 50 + mods * 200 + st * 10 +
+    probsSolvedCount() * 15 + reviewsDone() * 20 +
+    parseInt(localStorage.getItem('dsa-questn') || '0') * 30 +
+    parseInt(localStorage.getItem('dsa-flashn') || '0') * 2;
   const level = Math.floor(Math.sqrt(xp / 100)) + 1;
   const base = 100 * (level - 1) ** 2, next = 100 * level ** 2;
   return {
@@ -868,6 +959,103 @@ const BADGES = [
   { id: 'ten',     ico: '⏳', n: 'Ten Hour Club',   d: 'Log 10 hours of total study',    t: s => s.totalTime >= 36000 },
   { id: 'star',    ico: '🎯', n: 'Know Thyself',    d: 'Star a topic for revision',      t: s => s.starred >= 1 },
 ];
+// ── spaced repetition: review done topics at 1, 3, 7 and 21 days ──
+const SR_INT = [1, 3, 7, 21];
+const srData = () => JSON.parse(localStorage.getItem('dsa-sr') || '{}');
+const reviewsDone = () => Object.values(srData()).reduce((a, x) => a + (x.r || []).length, 0);
+function srSync() {
+  const sr = srData();
+  let changed = false;
+  const doneSet = new Set(allTopics().filter(t => t.status === 'done').map(t => t.num));
+  for (const n of doneSet) if (!sr[n]) { sr[n] = { d: iso(new Date()), r: [] }; changed = true; }
+  for (const n of Object.keys(sr)) if (!doneSet.has(n)) { delete sr[n]; changed = true; }
+  if (changed) localStorage.setItem('dsa-sr', JSON.stringify(sr));
+  return sr;
+}
+function dueReviews() {
+  const sr = srSync(), today = iso(new Date()), out = [];
+  for (const [n, x] of Object.entries(sr)) {
+    const i = (x.r || []).length;
+    if (i >= SR_INT.length) continue;
+    const d = new Date(x.d + 'T00:00:00');
+    d.setDate(d.getDate() + SR_INT[i]);
+    if (iso(d) <= today) out.push({ num: n, round: i + 1 });
+  }
+  return out;
+}
+function markReviewed(num) {
+  const sr = srData();
+  if (!sr[num]) return;
+  sr[num].r = (sr[num].r || []).concat(iso(new Date()));
+  localStorage.setItem('dsa-sr', JSON.stringify(sr));
+  toast('Review logged. +20 XP');
+  renderAll();
+}
+
+// ── daily quest: study 30 minutes, +30 XP ──
+const QUEST_MIN = 30;
+function questCheck() {
+  const today = iso(new Date());
+  const q = JSON.parse(localStorage.getItem('dsa-quest') || '{}');
+  if (q.date === today && q.done) return true;
+  if (dayTotal(today) >= QUEST_MIN * 60) {
+    localStorage.setItem('dsa-quest', JSON.stringify({ date: today, done: true }));
+    localStorage.setItem('dsa-questn', String(parseInt(localStorage.getItem('dsa-questn') || '0') + 1));
+    confetti();
+    toast('Daily quest complete: ' + QUEST_MIN + ' minutes studied. +30 XP');
+    return true;
+  }
+  return false;
+}
+
+// ── flashcards: built from the bold key terms in the guide ──
+let deck = [], deckIdx = 0, deckRevealed = false;
+function flashDeck() {
+  const started = allTopics().filter(t => t.status !== 'todo').map(t => t.num);
+  const pool = [];
+  for (const [num, g] of Object.entries((guide && guide.topics) || {})) {
+    if (started.length && !started.includes(num)) continue;
+    for (const d of g.detail) {
+      for (const m of d.matchAll(/\*\*(.+?)\*\*/g)) {
+        const idx = d.indexOf(m[0]);
+        const from = d.lastIndexOf(';', idx) + 1;
+        let to = d.indexOf(';', idx); if (to === -1) to = d.length;
+        pool.push({ term: m[1], num, ctx: d.slice(from, to).replace(/\*\*/g, '').trim() });
+      }
+    }
+  }
+  return pool.sort(() => Math.random() - 0.5).slice(0, 10);
+}
+function flashRender() {
+  const box = $('flash-body');
+  if (deckIdx >= deck.length) {
+    box.innerHTML = '<p class="fq">Session complete. ' + deck.length + ' cards done.</p>' +
+      '<div class="fbtns"><button class="mini-btn" data-flash="close">Close</button>' +
+      '<button class="cta small" data-flash="start">Another round</button></div>';
+    return;
+  }
+  const c = deck[deckIdx];
+  const t = allTopics().find(t => t.num === c.num);
+  box.innerHTML = '<div class="fmeta">Card ' + (deckIdx + 1) + ' / ' + deck.length +
+    ' · Topic ' + c.num + (t ? ': ' + esc(t.title) : '') + '</div>' +
+    '<p class="fq">Explain: <b>' + esc(c.term) + '</b></p>' +
+    (deckRevealed
+      ? '<p class="fa">' + esc(c.ctx) + '</p>' +
+        '<div class="fbtns"><button class="mini-btn" data-flash="again">Shaky - repeat later</button>' +
+        '<button class="cta small" data-flash="got">Got it (+2 XP)</button></div>'
+      : '<div class="fbtns"><button class="cta small" data-flash="reveal">Reveal</button></div>');
+}
+function flashAction(a) {
+  if (a === 'start') { deck = flashDeck(); deckIdx = 0; deckRevealed = false; $('flash').hidden = false; flashRender(); return; }
+  if (a === 'close') { $('flash').hidden = true; renderAll(); return; }
+  if (a === 'reveal') { deckRevealed = true; flashRender(); return; }
+  if (a === 'got') {
+    localStorage.setItem('dsa-flashn', String(parseInt(localStorage.getItem('dsa-flashn') || '0') + 1));
+    deckIdx++; deckRevealed = false; flashRender(); return;
+  }
+  if (a === 'again') { deck.push(deck[deckIdx]); deckIdx++; deckRevealed = false; flashRender(); }
+}
+
 let achInit = false;
 function checkBadges() {
   const s = gameStats();
@@ -951,6 +1139,7 @@ function renderSide() {
       return '<div class="side-prog side-xp"><div class="lbl"><span>Level ' + g.level + ' · ' + g.title + '</span><b>' + g.xp + ' XP</b></div>' +
         '<div class="track"><div class="fill xp" style="width:' + g.lvlPct + '%"></div></div>' +
         '<div class="xp-next">' + (g.nextXp - g.xp) + ' XP to level ' + (g.level + 1) + '</div></div>'; })() +
+    '<div class="side-search"><input id="tsearch" type="search" placeholder="Search topics ( / )" autocomplete="off"></div>' +
     '<div class="side-home' + (sel === 'home' ? ' sel' : '') + '" data-go="home">' +
     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>' +
     'Dashboard</div>';
@@ -1043,6 +1232,16 @@ function topicView(t, phaseName, phaseIdx) {
           linkify(l.text) + '</div></div>').join('') + '</div>'
       : '') +
     '<div class="card" id="notes-box" style="display:none"></div>' +
+    (PROBLEMS[t.num] ? (() => {
+      const solved = new Set(probsData()[t.num] || []);
+      return '<div class="card"><h3>Core problems<span class="spacer"></span>' +
+        '<span class="ach-count" id="prob-count">' + solved.size + ' / ' + PROBLEMS[t.num].length + ' solved</span></h3>' +
+        PROBLEMS[t.num].map(p =>
+          '<label class="prob"><input type="checkbox" data-prob="' + esc(p.n) + '" data-topic="' + t.num + '"' + (solved.has(p.n) ? ' checked' : '') + '>' +
+          '<a href="https://leetcode.com/problems/' + p.u + '/" target="_blank" rel="noopener">' + esc(p.n) + '</a>' +
+          '<span class="diff ' + p.d + '">' + ({E:'Easy',M:'Medium',H:'Hard'})[p.d] + '</span></label>').join('') +
+        '</div>';
+    })() : '') +
     '<div class="grid2">' +
     ((VISUAL[t.num] || []).length ? '<div class="card"><h3>Visualize</h3>' + linkList(VISUAL[t.num]) + '</div>' : '') +
     ((PRACTICE[t.num] || []).length ? '<div class="card"><h3>Practice</h3>' + linkList(PRACTICE[t.num]) + '</div>' : '') +
@@ -1134,6 +1333,29 @@ function homeView() {
       return '<div class="ach' + (on ? ' on' : '') + '" title="' + esc(b.d) + '">' +
         '<span class="ai">' + (on ? b.ico : '🔒') + '</span><b>' + b.n + '</b><i>' + esc(b.d) + '</i></div>';
     }).join('') + '</div></div>' +
+
+    (() => {
+      const today = iso(new Date());
+      const questDone = (JSON.parse(localStorage.getItem('dsa-quest') || '{}').date === today) && JSON.parse(localStorage.getItem('dsa-quest') || '{}').done;
+      const mins = Math.min(QUEST_MIN, Math.floor(dayTotal(today) / 60));
+      const due = dueReviews();
+      const nameOf = n => { const t = topics.find(t => t.num === n); return t ? t.title : 'Topic ' + n; };
+      return '<div class="grid2">' +
+        '<div class="card"><h3>Daily quest<span class="spacer"></span><span class="ach-count">' + (questDone ? 'Complete · +30 XP' : mins + ' / ' + QUEST_MIN + ' min') + '</span></h3>' +
+        '<p class="' + (questDone ? 'quest-done' : 'empty') + '">' + (questDone
+          ? 'Studied ' + QUEST_MIN + '+ minutes today. Quest complete.'
+          : 'Study ' + QUEST_MIN + ' minutes today. Start the timer and it completes itself.') + '</p>' +
+        '<div class="track" style="margin-top:10px"><div class="fill' + (questDone ? '' : '') + '" style="width:' + Math.round(mins / QUEST_MIN * 100) + '%"></div></div></div>' +
+        '<div class="card"><h3>Review queue<span class="spacer"></span><span class="ach-count">' + due.length + ' due</span></h3>' +
+        (due.length
+          ? due.map(r => '<div class="rev-row"><span>' + esc(nameOf(r.num)) + ' <i class="rev-round">round ' + r.round + '/4</i></span>' +
+              '<span><button class="mini-btn" data-go="' + r.num + '">Open</button> <button class="mini-btn" data-rev="' + r.num + '">Reviewed +20 XP</button></span></div>').join('')
+          : '<p class="empty">Nothing due. Completed topics come back for review after 1, 3, 7 and 21 days - spaced repetition, on autopilot.</p>') +
+        '</div></div>' +
+        '<div class="card"><h3>Interview practice<span class="spacer"></span>' +
+        '<button class="mini-btn" data-flash="start">Start flashcards</button></h3>' +
+        '<p class="empty">10 quick cards built from the key terms of topics you\'ve started. Explain each out loud, then reveal.</p></div>';
+    })() +
 
     (localChanges ? '<div class="card"><h3>Local progress changes (' + localChanges + ')' +
       '<span class="spacer"></span>' +
@@ -1247,7 +1469,18 @@ function generateProgressMd() {
 
 // ── keyboard shortcuts ──
 document.addEventListener('keydown', e => {
-  if (e.target.matches('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.matches('input, textarea, select')) {
+    if (e.key === 'Escape' && e.target.id === 'tsearch') { e.target.value = ''; e.target.dispatchEvent(new Event('input', { bubbles: true })); e.target.blur(); }
+    return;
+  }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === '/') {
+    e.preventDefault();
+    if (innerWidth <= 920) { $('side').classList.add('open'); $('side-veil').classList.add('show'); }
+    const s = $('tsearch'); if (s) s.focus();
+    return;
+  }
+  if (e.key === 'Escape' && !$('flash').hidden) { flashAction('close'); return; }
   if (e.key === 't') { toggleTimer(); return; }
   if (e.key === 'h') { select('home'); return; }
   if (e.key === 'j' || e.key === 'k') {
@@ -1256,6 +1489,20 @@ document.addEventListener('keydown', e => {
     const n = e.key === 'j' ? (i === -1 ? 0 : i + 1) : (i === -1 ? topics.length - 1 : i - 1);
     if (topics[n]) select(topics[n].num);
   }
+});
+
+// sidebar topic search (delegated - survives re-renders)
+$('side').addEventListener('input', e => {
+  if (e.target.id !== 'tsearch') return;
+  const q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('#side .lesson').forEach(l =>
+    l.style.display = !q || l.textContent.toLowerCase().includes(q) ? '' : 'none');
+  document.querySelectorAll('#side details.mod').forEach(d => {
+    if (q) {
+      d.open = true;
+      d.style.display = [...d.querySelectorAll('.lesson')].some(l => l.style.display !== 'none') ? '' : 'none';
+    } else d.style.display = '';
+  });
 });
 
 // ── video lazy-load + click handling ──
@@ -1269,7 +1516,24 @@ function loadPlayers() {
   });
 }
 
+document.addEventListener('change', e => {
+  const cb = e.target.closest('input[data-prob]');
+  if (!cb) return;
+  const p = probsData(), num = cb.dataset.topic, name = cb.dataset.prob;
+  p[num] = p[num] || [];
+  if (cb.checked) { if (!p[num].includes(name)) p[num].push(name); toast('Solved: ' + name + '. +15 XP'); }
+  else p[num] = p[num].filter(x => x !== name);
+  localStorage.setItem('dsa-probs', JSON.stringify(p));
+  const cnt = $('prob-count');
+  if (cnt && PROBLEMS[num]) cnt.textContent = p[num].length + ' / ' + PROBLEMS[num].length + ' solved';
+  renderSide(); // XP bar updates
+});
+
 document.addEventListener('click', e => {
+  const fl = e.target.closest('[data-flash]');
+  if (fl) { flashAction(fl.dataset.flash); return; }
+  const rev = e.target.closest('[data-rev]');
+  if (rev) { markReviewed(rev.dataset.rev); return; }
   const go = e.target.closest('[data-go]');
   if (go) { select(go.dataset.go); return; }
   const cyc = e.target.closest('[data-cycle]');
@@ -1374,6 +1638,9 @@ async function load() {
 }
 load();
 setInterval(load, 5000);
+
+// PWA: installable + offline
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>

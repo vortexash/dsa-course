@@ -1,0 +1,13 @@
+{
+  "name": "DSA Mastery",
+  "short_name": "DSA Mastery",
+  "description": "Free, open-source DSA course: 27 topics, videos, visualizers, XP and achievements.",
+  "start_url": "./dashboard.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1412",
+  "theme_color": "#0e7c66",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
