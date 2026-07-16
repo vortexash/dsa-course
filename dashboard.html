@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DSA Mastery - Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light;
@@ -33,7 +36,6 @@
     --side-st:     #d0d5dd;
     --shadow:      0 1px 3px rgba(16,24,40,0.07), 0 1px 2px rgba(16,24,40,0.04);
   }
-  /* dark theme: applied by OS preference (unless user forced light) or by the toggle */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
@@ -81,35 +83,28 @@
     --warn:        #fdb022;
     --warn-soft:   #2a2210;
     --side-bg:     #0a0f1c;
+    --side-ink:    #d0d5dd;
+    --side-strong: #ffffff;
+    --side-muted:  #667085;
+    --side-line:   rgba(255,255,255,0.08);
+    --side-sel:    rgba(79,70,229,0.35);
+    --side-sel-ink:#ffffff;
+    --side-hover:  rgba(255,255,255,0.06);
+    --side-track:  rgba(255,255,255,0.09);
+    --side-st:     #344054;
     --shadow:      none;
   }
-  #theme-btn {
-    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-    border-radius: 99px; width: 34px; height: 34px; font-size: 15px; line-height: 1;
-    display: grid; place-items: center; flex: none;
-  }
-  #theme-btn:hover { border-color: var(--brand); }
-  #timer-btn {
-    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-    border-radius: 99px; padding: 6px 14px; font-size: 12.5px; font-weight: 700;
-    font-variant-numeric: tabular-nums; white-space: nowrap; flex: none;
-  }
-  #timer-btn:hover { border-color: var(--brand); }
-  #timer-btn.on { background: var(--brand); border-color: var(--brand); color: #fff; }
-  .t-time { font-size: 12.5px; font-weight: 600; color: var(--muted); }
-
-  /* 7-day study time chart */
-  .tchart { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 8px; }
-  .tcol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
-  .tbar { width: 100%; max-width: 42px; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, var(--brand), var(--brand-2)); min-height: 2px; }
-  .tcol span { font-size: 10.5px; color: var(--muted); text-align: center; line-height: 1.3; }
-  .tcol b { font-size: 10.5px; color: var(--ink-2); }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--page); color: var(--ink); }
+  body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--page); color: var(--ink); font-size: 15px; }
   a { color: var(--brand); text-decoration: none; }
   a:hover { text-decoration: underline; }
   button { font: inherit; cursor: pointer; }
+  kbd {
+    font-family: inherit; font-size: 11px; font-weight: 600; color: var(--ink-2);
+    border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px;
+    background: var(--surface);
+  }
 
   #layout { display: grid; grid-template-columns: 296px 1fr; min-height: 100vh; }
   @media (max-width: 920px) {
@@ -117,7 +112,7 @@
     #side { position: static; max-height: none; height: auto; }
   }
 
-  /* ═══ SIDEBAR ═══════════════════════════════════ */
+  /* ─ sidebar ─ */
   #side {
     background: var(--side-bg); color: var(--side-ink);
     border-right: 1px solid var(--side-line);
@@ -128,9 +123,9 @@
   .brand .logo {
     width: 34px; height: 34px; border-radius: 9px; flex: none;
     background: linear-gradient(135deg, var(--brand), var(--brand-2));
-    display: grid; place-items: center; font-size: 17px; color: #fff;
+    display: grid; place-items: center; color: #fff;
   }
-  .brand b { font-size: 15px; color: var(--side-strong); letter-spacing: 0.01em; }
+  .brand b { font-size: 15px; color: var(--side-strong); letter-spacing: -0.01em; }
   .brand span { display: block; font-size: 11px; color: var(--side-muted); margin-top: 1px; }
 
   .side-prog { padding: 0 20px 14px; border-bottom: 1px solid var(--side-line); }
@@ -143,6 +138,7 @@
     display: flex; align-items: center; gap: 10px; margin: 10px 12px 4px;
     padding: 9px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 600; color: var(--side-strong); cursor: pointer;
   }
+  .side-home svg { flex: none; }
   .side-home:hover { background: var(--side-hover); }
   .side-home.sel { background: var(--side-sel); color: var(--side-sel-ink); }
 
@@ -180,30 +176,49 @@
   .lesson.done { color: var(--side-muted); }
   .lesson .star { margin-left: auto; font-size: 11px; }
 
-  /* ═══ MAIN ══════════════════════════════════════ */
-  #main-wrap { min-width: 0; }
+  /* ─ main ─ */
+  #main-wrap { min-width: 0; display: flex; flex-direction: column; }
   #topbar {
     position: sticky; top: 0; z-index: 5;
-    display: flex; align-items: center; gap: 14px;
+    display: flex; align-items: center; gap: 12px;
     background: var(--surface); border-bottom: 1px solid var(--line);
     padding: 12px 32px;
   }
-  #crumb { font-size: 13px; color: var(--ink-2); }
+  #crumb { font-size: 13px; color: var(--ink-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #crumb b { color: var(--ink); font-weight: 600; }
   .streak-chip {
     margin-left: auto; font-size: 12.5px; font-weight: 600; white-space: nowrap;
     background: var(--warn-soft); color: var(--warn); border-radius: 99px; padding: 5px 12px;
   }
   #status { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  #timer-btn, #pomo-btn, #theme-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 99px; flex: none;
+  }
+  #timer-btn { padding: 6px 14px; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  #pomo-btn { padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  #theme-btn { width: 34px; height: 34px; font-size: 15px; line-height: 1; display: grid; place-items: center; }
+  #timer-btn:hover, #pomo-btn:hover, #theme-btn:hover { border-color: var(--brand); }
+  #timer-btn.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+  #pomo-btn.on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
 
-  #main { padding: 28px 32px 90px; max-width: 980px; }
+  #main { padding: 28px 32px 40px; max-width: 980px; width: 100%; }
+  #foot {
+    margin-top: auto; padding: 18px 32px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+  }
 
   /* topic page */
   .t-head { margin-bottom: 20px; }
   .t-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); margin-bottom: 6px; }
-  .t-title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .t-title-row h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
-  .badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 99px; white-space: nowrap; }
+  .t-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .t-title-row h1 { font-size: 25px; font-weight: 800; letter-spacing: -0.02em; }
+  .t-time { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .badge {
+    font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 99px;
+    white-space: nowrap; cursor: pointer; border: 1px solid transparent; user-select: none;
+  }
+  .badge:hover { border-color: currentColor; }
   .badge.todo    { background: var(--brand-soft); color: var(--brand); }
   .badge.active  { background: var(--brand-soft); color: var(--brand); }
   .badge.done    { background: var(--good-soft); color: var(--good-text); }
@@ -213,7 +228,16 @@
     background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
     box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px;
   }
-  .card > h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card > h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+  .card > h3 .spacer { flex: 1; }
+  .mini-btn {
+    font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 7px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  }
+  .mini-btn:hover { border-color: var(--brand); color: var(--brand); }
+  pre { background: var(--page); border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 13px; overflow-x: auto; margin: 8px 0; }
+  code { background: var(--page); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
+  .nh { display: block; margin-top: 10px; color: var(--ink); }
 
   .vtabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
   .vtab {
@@ -227,7 +251,6 @@
   .learn-body { font-size: 14.5px; line-height: 1.75; color: var(--ink-2); }
   .learn-body b { color: var(--ink); }
 
-  /* study-plan stepper */
   .step { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
   .step:last-child { border-bottom: none; padding-bottom: 0; }
   .step:first-child { padding-top: 0; }
@@ -270,7 +293,7 @@
   .nav-btn.primary .dir { color: rgba(255,255,255,0.75); }
   .nav-btn.primary:hover { filter: brightness(1.08); color: #fff; }
 
-  /* ═══ OVERVIEW ══════════════════════════════════ */
+  /* overview */
   .hero {
     border-radius: 16px; padding: 28px; margin-bottom: 22px; color: #fff;
     background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 60%, #9333ea 100%);
@@ -278,7 +301,7 @@
   }
   .hero .hi { flex: 1; min-width: 240px; }
   .hero .kick { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; margin-bottom: 8px; }
-  .hero h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .hero h1 { font-size: 23px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
   .hero p { font-size: 14px; opacity: 0.85; margin-bottom: 18px; }
   .cta {
     display: inline-block; background: #fff; color: #4f46e5; font-weight: 700; font-size: 14px;
@@ -287,20 +310,22 @@
   .cta:hover { transform: translateY(-1px); }
   .ring-box { display: grid; place-items: center; position: relative; }
   .ring-box svg { transform: rotate(-90deg); }
-  .ring-box .pct { position: absolute; font-size: 20px; font-weight: 700; }
+  .ring-box .pct { position: absolute; font-size: 20px; font-weight: 800; }
   .ring-box .pct small { display: block; font-size: 10px; font-weight: 600; opacity: 0.8; text-align: center; }
 
-  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 22px; }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
   .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px; }
+  .stat.click { cursor: pointer; }
+  .stat.click:hover { border-color: var(--brand); }
   .stat .ic { width: 40px; height: 40px; flex: none; border-radius: 10px; display: grid; place-items: center; font-size: 18px; background: var(--brand-soft); }
-  .stat .v { font-size: 20px; font-weight: 700; line-height: 1.1; }
-  .stat .l { font-size: 12px; color: var(--ink-2); }
+  .stat .v { font-size: 19px; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; }
+  .stat .l { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
 
-  .sec-title { font-size: 17px; font-weight: 700; margin: 26px 0 14px; }
+  .sec-title { font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin: 26px 0 14px; }
   .mods { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
   .mod-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
   .mod-card .kick { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  .mod-card h4 { font-size: 15px; font-weight: 700; line-height: 1.35; }
+  .mod-card h4 { font-size: 15px; font-weight: 700; line-height: 1.35; letter-spacing: -0.01em; }
   .mod-card .meta { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
   .mod-card .track { background: var(--line); }
   .mod-card button {
@@ -317,7 +342,22 @@
   .plain li { list-style: none; font-size: 13.5px; padding: 8px 0; border-bottom: 1px solid var(--line); line-height: 1.5; }
   .plain li:last-child { border-bottom: none; }
   .plain .date { color: var(--muted); font-size: 12px; margin-right: 8px; font-variant-numeric: tabular-nums; }
-  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+  .empty { color: var(--muted); font-size: 13px; }
+
+  .tchart { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 8px; }
+  .tcol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .tbar { width: 100%; max-width: 42px; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, var(--brand), var(--brand-2)); min-height: 2px; }
+  .tcol span { font-size: 10.5px; color: var(--muted); text-align: center; line-height: 1.3; }
+  .tcol b { font-size: 10.5px; color: var(--ink-2); }
+
+  #toast {
+    position: fixed; right: 20px; bottom: 20px; z-index: 50;
+    background: var(--ink); color: var(--page); font-size: 13.5px; font-weight: 600;
+    padding: 13px 18px; border-radius: 10px; box-shadow: 0 8px 24px rgba(16,24,40,0.25);
+    opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; max-width: 340px;
+  }
+  #toast.show { opacity: 1; transform: none; }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
 
   #error { display: none; margin: 24px; border-left: 4px solid var(--warn); }
   #error code { background: var(--brand-soft); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
@@ -330,7 +370,7 @@
   <p style="font-size:14px; line-height:1.6">
     This page reads <code>curriculum/progress.md</code> live, so it must be served over HTTP.<br>
     From the <b>dsa-course</b> folder run: <code>python -m http.server 8000</code>
-    then open <code>http://localhost:8000/dashboard.html</code> - or just double-click <code>dashboard.bat</code>.
+    then open <code>http://localhost:8000/dashboard.html</code> - or use the hosted site.
   </p>
 </div>
 
@@ -340,32 +380,28 @@
     <div id="topbar">
       <span id="crumb"></span>
       <span class="streak-chip" id="streak-chip" style="display:none"></span>
-      <button id="timer-btn" title="Start/pause the study timer">⏱ 0m ▶</button>
+      <button id="pomo-btn" title="Pomodoro: 25 min focus, 5 min break">Focus 25/5</button>
+      <button id="timer-btn" title="Start / pause the study timer">0m</button>
       <button id="theme-btn" title="Toggle light / dark mode">🌙</button>
       <span id="status"></span>
     </div>
     <main id="main"></main>
+    <div id="foot">
+      <span>Open source - <a href="https://github.com/vortexash/dsa-course" target="_blank" rel="noopener">GitHub</a></span>
+      <span><kbd>j</kbd>/<kbd>k</kbd> next / previous lesson</span>
+      <span><kbd>t</kbd> timer</span>
+      <span><kbd>h</kbd> dashboard</span>
+    </div>
   </div>
 </div>
+
+<div id="toast"></div>
+<canvas id="confetti"></canvas>
+<input type="file" id="import-file" accept=".json" style="display:none">
 
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-// ── light/dark toggle (persisted; defaults to OS preference) ──
-const effTheme = () => document.documentElement.dataset.theme ||
-  (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-function applyTheme(t) {
-  document.documentElement.dataset.theme = t;
-  localStorage.setItem('dsa-theme', t);
-  $('theme-btn').textContent = t === 'dark' ? '☀️' : '🌙';
-}
-const savedTheme = localStorage.getItem('dsa-theme');
-if (savedTheme) document.documentElement.dataset.theme = savedTheme;
-document.addEventListener('DOMContentLoaded', () => {
-  $('theme-btn').textContent = effTheme() === 'dark' ? '☀️' : '🌙';
-  $('theme-btn').addEventListener('click', () => applyTheme(effTheme() === 'dark' ? 'light' : 'dark'));
-});
 
 // markdown-ish text → safe HTML: **bold**, bare URLs → short host links
 function linkify(md) {
@@ -377,12 +413,22 @@ function linkify(md) {
   });
 }
 
-// Embedded course videos per topic - every entry starts at a TOPIC-SPECIFIC video
-// or dedicated playlist. v = single video, p = playlist.
-// Topic 8 has no embed: Striver has no strings playlist; the A2Z sheet rows carry
-// per-problem videos instead. Topic 25 is read-only by design.
-const RECUR = 'PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9'; // Striver recursion series
-const TREES = 'PLgUwDviBIf0q8Hkd7bK2Bpryj2xVJk8Vk'; // Striver tree series
+// theme toggle (persisted; defaults to OS preference)
+const effTheme = () => document.documentElement.dataset.theme ||
+  (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('dsa-theme', t);
+  $('theme-btn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+const savedTheme = localStorage.getItem('dsa-theme');
+if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+
+// ── course data: videos, practice, visualizers, reading ──
+// v = single video, p = playlist. Topic 8 has no embed (the A2Z sheet rows carry
+// per-problem videos). Topic 25 is revision-only by design.
+const RECUR = 'PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9';
+const TREES = 'PLgUwDviBIf0q8Hkd7bK2Bpryj2xVJk8Vk';
 const VIDEOS = {
   1:  [{l:'Striver - Time & Space Complexity', v:'FPu9Uld7W-E'}, {l:'Abdul Bari - Asymptotic Notations', v:'A03oI0znAoc'}],
   2:  [{l:'Striver - Basic Maths for DSA (digits, GCD)', v:'1xNbjMdbjug'}],
@@ -413,8 +459,6 @@ const VIDEOS = {
 const yt = s => s.v ? 'https://www.youtube-nocookie.com/embed/' + s.v
                     : 'https://www.youtube-nocookie.com/embed/videoseries?list=' + s.p;
 
-// Direct practice-problem links per topic.
-// Topics 1 & 25 have no problem sets by design (complexity habit / revision-only).
 const SHEET = 'https://takeuforward.org/dsa/strivers-a2z-sheet-learn-dsa-a-to-z';
 const NC = 'https://neetcode.io/roadmap', CSES = 'https://cses.fi/problemset/';
 const LCT = 'https://leetcode.com/tag/';
@@ -446,8 +490,6 @@ const PRACTICE = {
   27: [{t:'CodeChef roadmap - Combinatorics (20 problems)', u:'https://www.codechef.com/roadmap/data-structures-and-algorithms'}, {t:'CSES - Mathematics section', u:CSES}, {t:'LeetCode - combinatorics tag', u:LCT+'combinatorics/'}],
 };
 
-// Hand-picked blogs & tutorials per topic.
-// PDS = pythonds interactive book chapters; PYD = Python stdlib docs.
 const CPA = 'https://cp-algorithms.com/', UG = 'https://usaco.guide/', VA = 'https://visualgo.net/en/';
 const PDS = 'https://runestone.academy/ns/books/published/pythonds/';
 const PYD = 'https://docs.python.org/3/library/';
@@ -481,10 +523,8 @@ const BLOGS = {
   27: [{t:'CP-Algorithms - Binomial coefficients', u:CPA+'combinatorics/binomial-coefficients.html'}, {t:'Inclusion-exclusion', u:CPA+'combinatorics/inclusion-exclusion.html'}, {t:'USACO Guide - Combinatorics', u:UG+'gold/combo'}, {t:'math.comb & itertools docs', u:PYD+'math.html#math.comb'}],
 };
 
-// Interactive visualizers per topic - see the algorithm actually run.
-// Every URL below returned HTTP 200 in a link check on 2026-07-16.
-// CSV = Georgia Tech CS1332 visualization tool (hashmaps, sorting, stacks/queues,
-// heaps, BST, AVL, tries, KMP/Rabin-Karp, graphs, DP - pick from its menu)
+// Interactive visualizers per topic. Every URL returned HTTP 200 in a link check
+// on 2026-07-16. CSV = Georgia Tech CS1332 tool (pick the structure from its menu).
 const CSV = 'https://csvistool.com/';
 const PYT = 'https://pythontutor.com/visualize.html#mode=edit';
 const VISUAL = {
@@ -513,9 +553,10 @@ const VISUAL = {
   23: [{t:'VisuAlgo - segment tree build/query', u:VA+'segmenttree'}],
   24: [{t:'VisuAlgo - Fenwick tree, lowbit steps', u:VA+'fenwicktree'}],
   26: [{t:'Wikipedia - the famous sieve animation', u:'https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes'}, {t:'Khan Academy - modular arithmetic, visual intro', u:'https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/what-is-modular-arithmetic'}],
-  27: [{t:'MathsIsFun - interactive Pascal’s triangle', u:'https://www.mathsisfun.com/pascals-triangle.html'}, {t:'MathsIsFun - combinations & permutations, interactive', u:'https://www.mathsisfun.com/combinatorics/combinations-permutations.html'}],
+  27: [{t:'MathsIsFun - interactive Pascal\'s triangle', u:'https://www.mathsisfun.com/pascals-triangle.html'}, {t:'MathsIsFun - combinations & permutations, interactive', u:'https://www.mathsisfun.com/combinatorics/combinations-permutations.html'}],
 };
 
+// ── markdown parsers ──
 // resource-guide.md → { topics: {num: {detail[], layers[]}}, toolkit: [] }
 function parseGuide(md) {
   const g = { topics: {}, toolkit: [] };
@@ -585,15 +626,62 @@ function streak(dates) {
   const set = new Set(dates);
   if (!set.size) return 0;
   let n = 0, d = new Date();
-  // ponytail: streak = consecutive days ending today or yesterday
+  // streak = consecutive days ending today or yesterday
   if (!set.has(iso(d))) d.setDate(d.getDate() - 1);
   while (set.has(iso(d))) { n++; d.setDate(d.getDate() - 1); }
   return n;
 }
 
-// ── study timer ─────────────────────────────────────
-// Per-day per-topic seconds in localStorage 'dsa-time': { "2026-07-16": { "7": 1830 } }
-// Counts only while running and the page is open. Local to this browser.
+// ── toast + beep ──
+let toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 6000);
+}
+function beep() {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    const o = a.createOscillator(), g = a.createGain();
+    o.connect(g); g.connect(a.destination);
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.12, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.4);
+    o.start(); o.stop(a.currentTime + 0.4);
+  } catch (e) {}
+}
+
+// ── confetti (no libraries) ──
+let parts = [], rafId = null;
+function confetti() {
+  const cvs = $('confetti'), colors = ['#4f46e5','#7c3aed','#12b76a','#f79009','#ec4899'];
+  cvs.width = innerWidth; cvs.height = innerHeight;
+  for (let i = 0; i < 160; i++) parts.push({
+    x: Math.random() * cvs.width, y: -20 - Math.random() * cvs.height / 2,
+    vx: (Math.random() - 0.5) * 2, vy: 2 + Math.random() * 3,
+    s: 4 + Math.random() * 5, c: colors[i % 5], r: Math.random() * Math.PI,
+  });
+  if (!rafId) confettiStep();
+}
+function confettiStep() {
+  const cvs = $('confetti'), ctx = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+  parts = parts.filter(p => p.y < cvs.height + 20);
+  for (const p of parts) {
+    p.x += p.vx; p.y += p.vy; p.r += 0.05;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+    ctx.fillStyle = p.c; ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s * 0.6);
+    ctx.restore();
+  }
+  if (parts.length) rafId = requestAnimationFrame(confettiStep);
+  else { rafId = null; ctx.clearRect(0, 0, cvs.width, cvs.height); }
+}
+
+// ── study timer + pomodoro ──
+// Per-day per-topic seconds in localStorage 'dsa-time'. Counts only while
+// running and the page is open. Data is local to this browser.
 const fmtT = s => s >= 3600 ? Math.floor(s/3600) + 'h ' + Math.floor(s%3600/60) + 'm'
                             : s >= 60 ? Math.floor(s/60) + 'm' : s + 's';
 const timeData = () => JSON.parse(localStorage.getItem('dsa-time') || '{}');
@@ -606,40 +694,81 @@ function addTime(topic, secs) {
 }
 const dayTotal = k => Object.values(timeData()[k] || {}).reduce((a, b) => a + b, 0);
 const topicTotal = num => Object.values(timeData()).reduce((a, day) => a + (day[num] || 0), 0);
+function weekTotal() {
+  let s = 0;
+  for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); s += dayTotal(iso(d)); }
+  return s;
+}
+const getGoal = () => parseFloat(localStorage.getItem('dsa-goal') || '5');
 
 let timerOn = false, lastTick = 0;
+let pomoMode = localStorage.getItem('dsa-pomo') === '1';
+let pomoPhase = 'work', pomoEnd = 0;
+const POMO_WORK = 25 * 60000, POMO_BREAK = 5 * 60000;
+
 function timerFlush() {
   if (!timerOn) return;
   const now = Date.now();
   addTime(sel && sel !== 'home' ? sel : '0', Math.round((now - lastTick) / 1000));
   lastTick = now;
 }
+function pomoNext() {
+  if (pomoPhase === 'work') {
+    timerFlush(); timerOn = false;
+    pomoPhase = 'break'; pomoEnd = Date.now() + POMO_BREAK;
+    beep(); toast('Pomodoro complete - take a 5 minute break.');
+  } else {
+    pomoPhase = 'work'; pomoEnd = Date.now() + POMO_WORK;
+    timerOn = true; lastTick = Date.now();
+    beep(); toast('Break over - next 25 minute focus block started.');
+  }
+}
 function timerLabel() {
   const btn = $('timer-btn');
-  if (!btn) return;
-  const t = dayTotal(iso(new Date())) + (timerOn ? Math.round((Date.now() - lastTick) / 1000) : 0);
-  btn.textContent = '⏱ ' + fmtT(t) + (timerOn ? ' ⏸' : ' ▶');
+  if (pomoMode && (timerOn || pomoPhase === 'break')) {
+    const rem = Math.max(0, Math.round((pomoEnd - Date.now()) / 1000));
+    btn.textContent = (pomoPhase === 'break' ? 'Break ' : '') +
+      Math.floor(rem / 60) + ':' + String(rem % 60).padStart(2, '0') +
+      (timerOn ? ' ⏸' : pomoPhase === 'break' ? '' : ' ▶');
+  } else {
+    const t = dayTotal(iso(new Date())) + (timerOn ? Math.round((Date.now() - lastTick) / 1000) : 0);
+    btn.textContent = fmtT(t) + (timerOn ? ' ⏸' : ' ▶');
+  }
   btn.classList.toggle('on', timerOn);
 }
-setInterval(() => { if (timerOn && Date.now() - lastTick > 30000) timerFlush(); timerLabel(); }, 1000);
+setInterval(() => {
+  if (timerOn && Date.now() - lastTick > 30000) timerFlush();
+  if (pomoMode && (timerOn || pomoPhase === 'break') && pomoEnd && Date.now() >= pomoEnd) pomoNext();
+  timerLabel();
+}, 1000);
 window.addEventListener('beforeunload', timerFlush);
 document.addEventListener('visibilitychange', () => { if (document.hidden) timerFlush(); });
-document.addEventListener('DOMContentLoaded', () => {
-  timerLabel();
-  $('timer-btn').addEventListener('click', () => {
-    if (timerOn) { timerFlush(); timerOn = false; }
-    else { timerOn = true; lastTick = Date.now(); }
-    timerLabel();
-  });
-});
 
-// ── state ───────────────────────────────────────────
+function toggleTimer() {
+  if (timerOn) { timerFlush(); timerOn = false; pomoEnd = 0; pomoPhase = 'work'; }
+  else {
+    timerOn = true; lastTick = Date.now();
+    if (pomoMode) { pomoPhase = 'work'; pomoEnd = Date.now() + POMO_WORK; }
+  }
+  timerLabel();
+}
+
+// ── state ──
 let guide = null, lastMd = '', data = null;
-let sel = localStorage.getItem('dsa-sel') || ''; // topic num, or 'home'
+let sel = localStorage.getItem('dsa-sel') || '';
+let localProg = JSON.parse(localStorage.getItem('dsa-prog') || '{}'); // {num: status} local overrides
+let phaseSnapshot = null; // per-phase done counts, for module-complete confetti
 
 const CHIP = { done: '✓ Completed', active: 'In progress', starred: '★ Revise', todo: 'Not started' };
 const ST_MARK = { done: '✓', active: '▶', starred: '★', todo: '' };
+const ST_EMOJI = { todo: '⬜', active: '🟨', done: '✅', starred: '⭐' };
+const CYCLE = { todo: 'active', active: 'done', done: 'starred', starred: 'todo' };
 
+function applyOverrides(d) {
+  for (const p of d.phases) for (const t of p.topics) {
+    if (localProg[t.num]) { t.status = localProg[t.num]; t.starred = t.status === 'starred'; }
+  }
+}
 function allTopics() { return data.phases.flatMap(p => p.topics); }
 function curNum() { return (data.current || '').match(/\d+/)?.[0]; }
 
@@ -647,11 +776,28 @@ function select(next) {
   timerFlush(); // credit elapsed time to the topic we're leaving
   sel = next;
   localStorage.setItem('dsa-sel', sel);
-  renderSide(); renderMain(); renderCrumb();
+  renderAll();
   window.scrollTo({ top: 0 });
 }
 
-// ── sidebar ─────────────────────────────────────────
+function renderAll() { renderSide(); renderMain(); renderCrumb(); renderStreak(); }
+
+function rebuild(withConfetti) {
+  data = parse(lastMd);
+  applyOverrides(data);
+  const snap = data.phases.map(p => p.topics.filter(t => t.status === 'done').length);
+  if (withConfetti && phaseSnapshot) {
+    data.phases.forEach((p, i) => {
+      if (snap[i] === p.topics.length && (phaseSnapshot[i] ?? 0) < p.topics.length && p.topics.length) {
+        confetti(); toast('Module ' + (i + 1) + ' complete: ' + p.name);
+      }
+    });
+  }
+  phaseSnapshot = snap;
+  renderAll();
+}
+
+// ── sidebar ──
 function renderSide() {
   const cn = curNum();
   const topics = allTopics();
@@ -661,11 +807,13 @@ function renderSide() {
   const firstRender = !$('side').innerHTML;
 
   let html =
-    '<div class="brand"><div class="logo">⚡</div><div><b>DSA Mastery</b>' +
+    '<div class="brand"><div class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M13 2 3 14h7l-1 8 11-13h-8l1-7z"/></svg></div><div><b>DSA Mastery</b>' +
     '<span>27 topics · 6 modules</span></div></div>' +
     '<div class="side-prog"><div class="lbl"><span>Course progress</span><b>' + pct + '%</b></div>' +
     '<div class="track"><div class="fill" style="width:' + pct + '%"></div></div></div>' +
-    '<div class="side-home' + (sel === 'home' ? ' sel' : '') + '" data-go="home">🏠&nbsp; My Dashboard</div>';
+    '<div class="side-home' + (sel === 'home' ? ' sel' : '') + '" data-go="home">' +
+    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>' +
+    'Dashboard</div>';
 
   html += data.phases.map((p, i) => {
     const d = p.topics.filter(t => t.status === 'done').length;
@@ -689,14 +837,44 @@ function renderSide() {
 }
 
 function renderCrumb() {
-  if (sel === 'home' || !data) { $('crumb').innerHTML = '<b>My Dashboard</b>'; return; }
+  if (sel === 'home' || !data) { $('crumb').innerHTML = '<b>Dashboard</b>'; return; }
   const pi = data.phases.findIndex(p => p.topics.some(t => t.num === sel));
   const t = allTopics().find(t => t.num === sel);
   $('crumb').innerHTML = pi >= 0 && t
     ? 'Module ' + (pi + 1) + ' &nbsp;›&nbsp; <b>' + esc(t.title) + '</b>' : '';
 }
 
-// ── topic page ──────────────────────────────────────
+function renderStreak() {
+  const st = streak(data.sessions.map(s => s.date).filter(Boolean));
+  const chip = $('streak-chip');
+  chip.style.display = st > 0 ? '' : 'none';
+  chip.textContent = '🔥 ' + st + '-day streak';
+}
+
+// ── notes (renders notes/<slug>.md on the topic page if it exists) ──
+const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+function mdlite(md) {
+  let h = esc(md);
+  h = h.replace(/```(\w*)\n?([\s\S]*?)```/g, (m, l, c) => ' PRE' + btoa(unescape(encodeURIComponent(c))) + 'PRE ');
+  h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+  h = h.replace(/^#{1,6}\s*(.+)$/gm, '<b class="nh">$1</b>');
+  h = h.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  h = h.replace(/^[-*]\s+(.+)$/gm, '&bull; $1');
+  h = h.replace(/\n/g, '<br>');
+  return h.replace(/ PRE([^ ]*)PRE /g, (m, b) => '<pre>' + decodeURIComponent(escape(atob(b))) + '</pre>');
+}
+async function loadNotes(t) {
+  try {
+    const r = await fetch('notes/' + slugify(t.title) + '.md', { cache: 'no-store' });
+    if (!r.ok) return;
+    const md = await r.text();
+    if (/^\s*</.test(md)) return; // a 404 page, not markdown
+    const el = $('notes-box');
+    if (el) { el.innerHTML = '<h3>Your notes</h3><div class="learn-body">' + mdlite(md) + '</div>'; el.style.display = ''; }
+  } catch (e) {}
+}
+
+// ── topic page ──
 function topicView(t, phaseName, phaseIdx) {
   const res = guide && guide.topics[t.num];
   const vids = VIDEOS[t.num] || [];
@@ -707,34 +885,35 @@ function topicView(t, phaseName, phaseIdx) {
     : '';
   const linkList = arr => '<div class="link-list">' + arr.map(b =>
     '<a href="' + b.u + '" target="_blank" rel="noopener"><span class="ico">↗</span>' + esc(b.t) + '</a>').join('') + '</div>';
-
   const spent = topicTotal(t.num);
+
   return '<div class="t-head">' +
     '<div class="t-kicker">Module ' + (phaseIdx + 1) + ' - ' + esc(phaseName) + '</div>' +
     '<div class="t-title-row"><h1>' + t.num + '. ' + esc(t.title) + '</h1>' +
-    '<span class="badge ' + t.status + '">' + CHIP[t.status] + '</span>' +
-    (spent ? '<span class="t-time">⏱ ' + fmtT(spent) + ' studied</span>' : '') +
+    '<span class="badge ' + t.status + '" data-cycle="' + t.num + '" title="Click to change status">' + CHIP[t.status] + '</span>' +
+    (spent ? '<span class="t-time">' + fmtT(spent) + ' studied</span>' : '') +
     '</div></div>' +
     vidHtml +
     (res && res.detail.length
-      ? '<div class="card"><h3>📚 What you\'ll learn</h3><div class="learn-body">' + res.detail.map(linkify).join('<br>') + '</div></div>'
+      ? '<div class="card"><h3>What you\'ll learn</h3><div class="learn-body">' + res.detail.map(linkify).join('<br>') + '</div></div>'
       : '') +
     (res && res.layers.length
-      ? '<div class="card"><h3>🗺️ Study plan</h3>' + res.layers.map((l, i) =>
-          '<div class="step"><span class="n">' + (i + 1) + '</span><div class="tx"><b>' + l.icon + ' ' + l.label + '</b> - ' +
+      ? '<div class="card"><h3>Study plan</h3>' + res.layers.map((l, i) =>
+          '<div class="step"><span class="n">' + (i + 1) + '</span><div class="tx"><b>' + l.label + '</b> - ' +
           linkify(l.text) + '</div></div>').join('') + '</div>'
       : '') +
+    '<div class="card" id="notes-box" style="display:none"></div>' +
     '<div class="grid2">' +
-    ((VISUAL[t.num] || []).length ? '<div class="card"><h3>👁️ Visualize it</h3>' + linkList(VISUAL[t.num]) + '</div>' : '') +
-    ((PRACTICE[t.num] || []).length ? '<div class="card"><h3>🎯 Solve problems</h3>' + linkList(PRACTICE[t.num]) + '</div>' : '') +
-    ((BLOGS[t.num] || []).length ? '<div class="card"><h3>📖 Extra reading</h3>' + linkList(BLOGS[t.num]) + '</div>' : '') +
+    ((VISUAL[t.num] || []).length ? '<div class="card"><h3>Visualize</h3>' + linkList(VISUAL[t.num]) + '</div>' : '') +
+    ((PRACTICE[t.num] || []).length ? '<div class="card"><h3>Practice</h3>' + linkList(PRACTICE[t.num]) + '</div>' : '') +
+    ((BLOGS[t.num] || []).length ? '<div class="card"><h3>Further reading</h3>' + linkList(BLOGS[t.num]) + '</div>' : '') +
     '</div>' +
     '<a class="suggest" target="_blank" rel="noopener" href="https://github.com/vortexash/dsa-course/issues/new?template=resource-suggestion.yml&title=' +
     encodeURIComponent('[Resource] Topic ' + t.num + ': ' + t.title) +
-    '">➕ Found a great resource for this topic? Suggest it (opens a GitHub form)</a>';
+    '">+ Found a great resource for this topic? Suggest it</a>';
 }
 
-// 7-day study time bar chart (pure CSS, no libraries)
+// ── 7-day study time chart (pure CSS) ──
 function timeChart() {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -744,7 +923,7 @@ function timeChart() {
   }
   const max = Math.max(...days.map(d => d.secs), 1);
   const total = days.reduce((a, d) => a + d.secs, 0);
-  if (!total) return '<p class="empty">No study time logged yet - hit the ⏱ button in the top bar when you start studying.</p>';
+  if (!total) return '<p class="empty">No study time logged yet. Press the timer in the top bar (or hit <kbd>t</kbd>) when you start studying.</p>';
   return '<div class="tchart">' + days.map(d =>
     '<div class="tcol"><b>' + (d.secs ? fmtT(d.secs) : '') + '</b>' +
     '<div class="tbar" style="height:' + Math.round(d.secs / max * 80) + 'px"></div>' +
@@ -752,7 +931,7 @@ function timeChart() {
     '<div class="act-note">Total this week: ' + fmtT(total) + '</div>';
 }
 
-// ── dashboard (overview) page ───────────────────────
+// ── overview page ──
 function homeView() {
   const topics = allTopics();
   const done = topics.filter(t => t.status === 'done').length;
@@ -763,7 +942,6 @@ function homeView() {
   const cn = curNum();
   const cur = topics.find(t => t.num === cn) || topics.find(t => t.status !== 'done');
 
-  // progress ring
   const R = 52, C = 2 * Math.PI * R;
   const ring =
     '<div class="ring-box"><svg width="130" height="130">' +
@@ -772,7 +950,6 @@ function homeView() {
     'stroke-dasharray="' + (C * pct / 100) + ' ' + C + '"/></svg>' +
     '<div class="pct">' + pct + '%<small>complete</small></div></div>';
 
-  // activity heatmap
   const counts = {};
   for (const s of data.sessions) if (s.date) counts[s.date] = (counts[s.date] || 0) + 1;
   const seq = ['var(--line)', '#c7d2fe', '#818cf8', '#6366f1', '#4f46e5'];
@@ -786,23 +963,33 @@ function homeView() {
     cells += '<span class="day" style="background:' + seq[c] + '" title="' + key + ' · ' + (counts[key] || 0) + ' session(s)"></span>';
   }
 
-  const stat = (ico, v, l) =>
-    '<div class="stat"><div class="ic">' + ico + '</div><div><div class="v">' + v + '</div><div class="l">' + l + '</div></div></div>';
+  const stat = (ico, v, l, extra) =>
+    '<div class="stat' + (extra ? ' click" ' + extra : '"') + '><div class="ic">' + ico + '</div><div><div class="v">' + v + '</div><div class="l">' + l + '</div></div></div>';
+
+  const wk = weekTotal(), goalSecs = getGoal() * 3600;
+  const goalPct = goalSecs ? Math.min(100, Math.round(wk / goalSecs * 100)) : 0;
+  const localChanges = Object.keys(localProg).length;
 
   return '<div class="hero"><div class="hi">' +
     '<div class="kick">Data Structures &amp; Algorithms</div>' +
-    '<h1>' + (done ? 'Welcome back 👋' : 'Start your DSA journey 🚀') + '</h1>' +
-    '<p>' + (cur ? 'Up next: <b>' + cur.num + '. ' + esc(cur.title) + '</b>' : 'All topics complete - legend! 🏆') + '</p>' +
-    (cur ? '<button class="cta" data-go="' + cur.num + '">' + (done || active ? 'Continue learning →' : 'Start learning →') + '</button>' : '') +
+    '<h1>' + (done ? 'Pick up where you left off' : 'Start your DSA journey') + '</h1>' +
+    '<p>' + (cur ? 'Up next: <b>' + cur.num + '. ' + esc(cur.title) + '</b>' : 'All 27 topics complete.') + '</p>' +
+    (cur ? '<button class="cta" data-go="' + cur.num + '">' + (done || active ? 'Continue learning' : 'Start learning') + '</button>' : '') +
     '</div>' + ring + '</div>' +
 
     '<div class="stat-row">' +
     stat('✅', done + '<span style="font-size:13px;color:var(--muted)">/' + topics.length + '</span>', 'Topics completed') +
-    stat('📘', active, 'In progress') +
     stat('⭐', starred, 'Marked for revision') +
     stat('🔥', st, 'Day streak') +
     stat('⏱', fmtT(dayTotal(iso(new Date()))), 'Studied today') +
+    stat('🎯', goalPct + '%', fmtT(wk) + ' of ' + getGoal() + 'h weekly goal', 'data-act="goal" title="Click to change your weekly goal"') +
     '</div>' +
+
+    (localChanges ? '<div class="card"><h3>Local progress changes (' + localChanges + ')' +
+      '<span class="spacer"></span>' +
+      '<button class="mini-btn" data-act="copyprog">Copy updated progress.md</button>' +
+      '<button class="mini-btn" data-act="resetprog">Discard</button></h3>' +
+      '<p class="empty">Changes made here live in this browser only. Copy the updated progress.md into your repo (or tell Claude) to make them permanent.</p></div>' : '') +
 
     '<div class="sec-title">Modules</div><div class="mods">' +
     data.phases.map((p, i) => {
@@ -813,27 +1000,30 @@ function homeView() {
         '<div class="kick">Module ' + (i + 1) + '</div><h4>' + esc(p.name) + '</h4>' +
         '<div class="meta">' + d + ' / ' + p.topics.length + ' topics · ' + Math.round(d / p.topics.length * 100) + '%</div>' +
         '<div class="track"><div class="fill" style="width:' + (d / p.topics.length * 100) + '%"></div></div>' +
-        '<button data-go="' + target.num + '">' + (complete ? 'Review ↺' : d || p.topics.some(t => t.status === 'active') ? 'Continue →' : 'Start →') + '</button></div>';
+        '<button data-go="' + target.num + '">' + (complete ? 'Review' : d || p.topics.some(t => t.status === 'active') ? 'Continue' : 'Start') + '</button></div>';
     }).join('') + '</div>' +
 
     '<div class="sec-title">Your activity</div>' +
-    '<div class="card"><h3>⏱ Study time - last 7 days</h3>' + timeChart() + '</div>' +
+    '<div class="card"><h3>Study time - last 7 days' +
+    '<span class="spacer"></span>' +
+    '<button class="mini-btn" data-act="export">Export data</button>' +
+    '<button class="mini-btn" data-act="import">Import</button></h3>' + timeChart() + '</div>' +
     '<div class="grid2">' +
-    '<div class="card"><h3>📆 Last 12 weeks</h3><div id="activity">' + cells + '</div>' +
+    '<div class="card"><h3>Sessions - last 12 weeks</h3><div id="activity">' + cells + '</div>' +
     '<div class="act-note">One square per day · darker = more sessions · ' + data.sessions.length + ' sessions logged</div></div>' +
-    '<div class="card"><h3>⭐ Revision queue</h3><ul class="plain">' +
+    '<div class="card"><h3>Revision queue</h3><ul class="plain">' +
     (data.revision.length ? data.revision.map(r => '<li>' + esc(r) + '</li>').join('')
-      : '<li class="empty">Nothing starred - clean slate 🎉</li>') + '</ul></div>' +
+      : '<li class="empty">Nothing starred yet.</li>') + '</ul></div>' +
     '</div>' +
 
     '<div class="grid2">' +
-    '<div class="card"><h3>📝 Session log</h3><ul class="plain">' +
+    '<div class="card"><h3>Session log</h3><ul class="plain">' +
     (data.sessions.length
       ? data.sessions.slice().reverse().slice(0, 12).map(s =>
           '<li>' + (s.date ? '<span class="date">' + s.date + '</span>' : '') +
           esc(s.text.replace(s.date || '', '').replace(/^\s*[·-]\s*/, '')) + '</li>').join('')
-      : '<li class="empty">No sessions yet - run /today to start</li>') + '</ul></div>' +
-    '<div class="card"><h3>🧰 Master toolkit</h3><ul class="plain">' +
+      : '<li class="empty">No sessions yet - run /today with Claude to start.</li>') + '</ul></div>' +
+    '<div class="card"><h3>Toolkit</h3><ul class="plain">' +
     (guide ? guide.toolkit.map(r =>
       '<li><b>' + esc(r.name) + '</b> - ' + linkify(r.desc) + ' · ' + linkify(r.link) + '</li>').join('') : '') +
     '</ul></div></div>';
@@ -854,20 +1044,48 @@ function renderMain() {
         (next ? '<button class="nav-btn next primary" data-go="' + next.num + '"><span class="dir">Next lesson →</span>' + next.num + '. ' + esc(next.title) + '</button>' : '') +
         '</div>';
       loadPlayers();
+      loadNotes(t);
       return;
     }
   }
   $('main').innerHTML = homeView();
 }
 
-function renderStreak() {
-  const st = streak(data.sessions.map(s => s.date).filter(Boolean));
-  const chip = $('streak-chip');
-  chip.style.display = st > 0 ? '' : 'none';
-  chip.textContent = '🔥 ' + st + '-day streak';
+// ── local progress: cycle status, export updated progress.md ──
+function cycleStatus(num) {
+  const t = allTopics().find(t => t.num === num);
+  if (!t) return;
+  const next = CYCLE[t.status];
+  // parse the original md status for this topic to know if the override is redundant
+  const base = parse(lastMd).phases.flatMap(p => p.topics).find(x => x.num === num);
+  if (base && base.status === next) delete localProg[num];
+  else localProg[num] = next;
+  localStorage.setItem('dsa-prog', JSON.stringify(localProg));
+  rebuild(true);
+  toast('Topic ' + num + ' set to "' + CHIP[next] + '" (local - see Dashboard to sync)');
+}
+function generateProgressMd() {
+  return lastMd.split(/\r?\n/).map(line => {
+    const m = line.match(/^(\s*-\s+)([⬜🟨✅⭐])(\s*Topic\s*(\d+)\s*:.*)$/u);
+    if (m && localProg[m[4]]) return m[1] + ST_EMOJI[localProg[m[4]]] + m[3];
+    return line;
+  }).join('\n');
 }
 
-// lazy-load: only give an iframe to the visible player
+// ── keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 't') { toggleTimer(); return; }
+  if (e.key === 'h') { select('home'); return; }
+  if (e.key === 'j' || e.key === 'k') {
+    const topics = allTopics();
+    const i = topics.findIndex(t => t.num === sel);
+    const n = e.key === 'j' ? (i === -1 ? 0 : i + 1) : (i === -1 ? topics.length - 1 : i - 1);
+    if (topics[n]) select(topics[n].num);
+  }
+});
+
+// ── video lazy-load + click handling ──
 function loadPlayers() {
   document.querySelectorAll('#main .player:empty').forEach(p => {
     const f = document.createElement('iframe');
@@ -881,6 +1099,37 @@ function loadPlayers() {
 document.addEventListener('click', e => {
   const go = e.target.closest('[data-go]');
   if (go) { select(go.dataset.go); return; }
+  const cyc = e.target.closest('[data-cycle]');
+  if (cyc) { cycleStatus(cyc.dataset.cycle); return; }
+  const act = e.target.closest('[data-act]');
+  if (act) {
+    const a = act.dataset.act;
+    if (a === 'goal') {
+      const v = prompt('Weekly study goal in hours:', getGoal());
+      const n = parseFloat(v);
+      if (v !== null && n > 0) { localStorage.setItem('dsa-goal', String(n)); rebuild(false); }
+    } else if (a === 'export') {
+      const blob = new Blob([JSON.stringify({ time: timeData(), goal: getGoal(), prog: localProg }, null, 2)], { type: 'application/json' });
+      const aEl = document.createElement('a');
+      aEl.href = URL.createObjectURL(blob);
+      aEl.download = 'dsa-study-data.json';
+      aEl.click();
+      URL.revokeObjectURL(aEl.href);
+    } else if (a === 'import') {
+      $('import-file').click();
+    } else if (a === 'copyprog') {
+      navigator.clipboard.writeText(generateProgressMd())
+        .then(() => toast('Updated progress.md copied - paste it into curriculum/progress.md and push.'))
+        .catch(() => toast('Copy failed - your browser blocked clipboard access.'));
+    } else if (a === 'resetprog') {
+      if (confirm('Discard all local progress changes?')) {
+        localProg = {};
+        localStorage.setItem('dsa-prog', '{}');
+        rebuild(false);
+      }
+    }
+    return;
+  }
   const b = e.target.closest('.vtab');
   if (!b) return;
   b.parentElement.querySelectorAll('.vtab').forEach(x => x.classList.toggle('on', x === b));
@@ -890,6 +1139,39 @@ document.addEventListener('click', e => {
   loadPlayers();
 });
 
+$('import-file').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  f.text().then(txt => {
+    try {
+      const d = JSON.parse(txt);
+      if (d.time) localStorage.setItem('dsa-time', JSON.stringify(d.time));
+      if (d.goal) localStorage.setItem('dsa-goal', String(d.goal));
+      if (d.prog) { localProg = d.prog; localStorage.setItem('dsa-prog', JSON.stringify(d.prog)); }
+      rebuild(false);
+      toast('Study data imported.');
+    } catch (err) { toast('Import failed - not a valid backup file.'); }
+  });
+  e.target.value = '';
+});
+
+// topbar buttons
+$('theme-btn').textContent = effTheme() === 'dark' ? '☀️' : '🌙';
+$('theme-btn').addEventListener('click', () => applyTheme(effTheme() === 'dark' ? 'light' : 'dark'));
+$('timer-btn').addEventListener('click', toggleTimer);
+$('pomo-btn').classList.toggle('on', pomoMode);
+$('pomo-btn').addEventListener('click', () => {
+  pomoMode = !pomoMode;
+  localStorage.setItem('dsa-pomo', pomoMode ? '1' : '0');
+  $('pomo-btn').classList.toggle('on', pomoMode);
+  if (pomoMode && timerOn) { pomoPhase = 'work'; pomoEnd = Date.now() + POMO_WORK; }
+  if (!pomoMode) { pomoEnd = 0; pomoPhase = 'work'; }
+  toast(pomoMode ? 'Pomodoro on: 25 min focus, 5 min break.' : 'Pomodoro off: plain stopwatch.');
+  timerLabel();
+});
+timerLabel();
+
+// ── load loop ──
 async function load() {
   try {
     if (!guide) {
@@ -900,17 +1182,16 @@ async function load() {
     if (!res.ok) throw new Error(res.status);
     const md = await res.text();
     if (md !== lastMd) {
+      const first = !lastMd;
       lastMd = md;
-      data = parse(md);
-      if (!sel) sel = 'home'; // first visit lands on the dashboard
-      // ponytail: full re-render only when progress.md actually changes
-      renderSide(); renderMain(); renderCrumb(); renderStreak();
+      if (!sel) sel = 'home';
+      rebuild(!first);
     }
     $('layout').style.display = ''; $('error').style.display = 'none';
-    $('status').textContent = 'live · ' + new Date().toLocaleTimeString();
+    $('status').textContent = 'live';
   } catch {
     $('error').style.display = 'block';
-    $('status').textContent = 'disconnected';
+    $('status').textContent = 'offline';
   }
 }
 load();
