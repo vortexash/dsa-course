@@ -40,6 +40,18 @@ analysis, tracks your progress, and pushes updates to your live dashboard.
 - `solutions/<topic>/` - your code, one file per problem
 - `notes/<topic>.md` - one-page cheat-sheets you write after each topic
 
+## Contributing resources
+
+This is community-driven: if you find a great free video, article, visualizer or
+problem set for any topic, suggest it!
+
+- Easiest: click "➕ Suggest a resource" at the bottom of any topic page on the
+  dashboard - it opens a prefilled GitHub issue form.
+- Or open a PR editing the `VIDEOS` / `PRACTICE` / `BLOGS` / `VISUAL` maps at the
+  top of the `<script>` in `dashboard.html` (topic number → list of `{t: title, u: url}`).
+
+Rules: free resources only, working links, one suggestion per issue.
+
 ## Tips
 
 - Edit the "Language" line in CLAUDE.md if you're not using Python.

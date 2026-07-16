@@ -1,0 +1,39 @@
+name: Suggest a resource
+description: Found a great free video, article, visualizer or problem set? Suggest it for a topic.
+title: "[Resource] "
+labels: ["resource-suggestion"]
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: Which topic is this for? (e.g. "7. Binary Search")
+      placeholder: "7. Binary Search"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Link
+      placeholder: https://...
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options:
+        - Video
+        - Article / blog
+        - Visualizer
+        - Practice problems
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it good?
+      description: One or two lines. Free resources only - no paywalled content.
+    validations:
+      required: true

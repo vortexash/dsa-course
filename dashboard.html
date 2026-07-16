@@ -234,6 +234,13 @@
   .link-list a:hover { background: var(--brand-soft); text-decoration: none; color: var(--brand); }
   .link-list .ico { flex: none; width: 30px; height: 30px; border-radius: 8px; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-size: 14px; }
 
+  .suggest {
+    display: block; text-align: center; margin-top: 4px;
+    padding: 13px; border: 1.5px dashed var(--line); border-radius: 12px;
+    font-size: 13.5px; font-weight: 600; color: var(--ink-2);
+  }
+  .suggest:hover { border-color: var(--brand); color: var(--brand); text-decoration: none; }
+
   .nav-row { display: flex; justify-content: space-between; gap: 14px; margin-top: 26px; }
   .nav-btn {
     display: block; max-width: 46%; text-align: left; line-height: 1.45;
@@ -659,7 +666,10 @@ function topicView(t, phaseName, phaseIdx) {
     ((VISUAL[t.num] || []).length ? '<div class="card"><h3>👁️ Visualize it</h3>' + linkList(VISUAL[t.num]) + '</div>' : '') +
     ((PRACTICE[t.num] || []).length ? '<div class="card"><h3>🎯 Solve problems</h3>' + linkList(PRACTICE[t.num]) + '</div>' : '') +
     ((BLOGS[t.num] || []).length ? '<div class="card"><h3>📖 Extra reading</h3>' + linkList(BLOGS[t.num]) + '</div>' : '') +
-    '</div>';
+    '</div>' +
+    '<a class="suggest" target="_blank" rel="noopener" href="https://github.com/vortexash/dsa-course/issues/new?template=resource-suggestion.yml&title=' +
+    encodeURIComponent('[Resource] Topic ' + t.num + ': ' + t.title) +
+    '">➕ Found a great resource for this topic? Suggest it (opens a GitHub form)</a>';
 }
 
 // ── dashboard (overview) page ───────────────────────
