@@ -217,19 +217,48 @@
   }
   #status { font-size: 11px; color: var(--muted); white-space: nowrap; }
   #auth-btn {
-    border: 1px solid var(--line); background: var(--surface); color: var(--brand);
-    border-radius: 99px; flex: none; padding: 6px 14px; font-size: 12.5px; font-weight: 700; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+    border: none; background: var(--brand); color: #fff;
+    border-radius: 99px; flex: none; padding: 8px 18px;
+    font-size: 13px; font-weight: 700; white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(14,124,102,0.35);
   }
-  #auth-btn:hover { border-color: var(--brand); }
+  #auth-btn:hover { filter: brightness(1.1); }
+  #auth-btn.in { background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 4px 14px 4px 4px; }
+  #auth-btn.in:hover { border-color: var(--brand); }
+  #auth-btn .av {
+    width: 26px; height: 26px; border-radius: 50%; flex: none;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 800; text-transform: uppercase;
+  }
   #timer-btn, #pomo-btn, #theme-btn {
     border: 1px solid var(--line); background: var(--surface); color: var(--ink);
     border-radius: 99px; flex: none;
   }
-  #timer-btn { padding: 6px 14px; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  #timer-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 15px 4px 4px; font-size: 12.5px; font-weight: 700;
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  #timer-btn .tb-ic {
+    width: 26px; height: 26px; border-radius: 50%; flex: none;
+    background: var(--brand-soft); color: var(--brand);
+    display: grid; place-items: center;
+  }
+  #timer-btn .tb-ic svg { display: block; }
+  #timer-btn.on {
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    border-color: transparent; color: #fff;
+    box-shadow: 0 2px 10px rgba(14,124,102,0.4);
+  }
+  #timer-btn.on .tb-ic { background: rgba(255,255,255,0.22); color: #fff; animation: tpulse 2s ease-out infinite; }
+  @keyframes tpulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
+    50% { box-shadow: 0 0 0 6px rgba(255,255,255,0); }
+  }
   #pomo-btn { padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
   #theme-btn { width: 34px; height: 34px; font-size: 15px; line-height: 1; display: grid; place-items: center; }
   #timer-btn:hover, #pomo-btn:hover, #theme-btn:hover { border-color: var(--brand); }
-  #timer-btn.on { background: var(--brand); border-color: var(--brand); color: #fff; }
   #pomo-btn.on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
 
   #main { padding: 28px 32px 40px; max-width: 980px; width: 100%; }
@@ -425,17 +454,41 @@
   #flash, #auth { position: fixed; inset: 0; z-index: 60; background: rgba(16,20,18,0.55); display: grid; place-items: center; padding: 20px; }
   #flash[hidden], #auth[hidden] { display: none; }
   #auth-card {
-    position: relative; width: min(420px, 100%); background: var(--surface);
-    border: 1px solid var(--line); border-radius: 16px; padding: 28px;
-    animation: fadeUp .3s cubic-bezier(.2,.7,.3,1) both;
+    position: relative; width: min(400px, 100%); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 18px; padding: 34px 30px 26px;
+    animation: fadeUp .3s cubic-bezier(.2,.7,.3,1) both; text-align: center;
   }
-  #auth-x { position: absolute; top: 12px; right: 12px; border: none; background: none; color: var(--muted); font-size: 15px; cursor: pointer; }
+  #auth-x { position: absolute; top: 14px; right: 14px; border: none; background: none; color: var(--muted); font-size: 15px; cursor: pointer; }
+  #auth-x:hover { color: var(--ink); }
+  .a-logo {
+    width: 46px; height: 46px; border-radius: 13px; margin: 0 auto 16px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display: grid; place-items: center; box-shadow: 0 4px 14px rgba(14,124,102,0.35);
+  }
+  #a-title { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .a-sub { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; margin-bottom: 22px; }
+  .a-lbl { display: block; text-align: left; font-size: 12px; font-weight: 700; color: var(--ink-2); margin: 0 0 6px 2px; }
   #auth-card input {
     width: 100%; font: inherit; font-size: 14px; color: var(--ink);
-    background: var(--page); border: 1px solid var(--line); border-radius: 9px;
-    padding: 11px 14px; margin-bottom: 10px; outline: none;
+    background: var(--page); border: 1.5px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 14px; outline: none; transition: border-color .15s;
   }
   #auth-card input:focus { border-color: var(--brand); }
+  #a-err {
+    text-align: left; font-size: 12.5px; font-weight: 600; color: #c0392b;
+    background: #fdecea; border-radius: 8px; padding: 9px 12px; margin-bottom: 12px;
+  }
+  :root[data-theme="dark"] #a-err { background: #33201d; color: #e07b6a; }
+  #a-go {
+    width: 100%; border: none; border-radius: 10px; padding: 13px;
+    background: linear-gradient(90deg, var(--brand), var(--brand-2)); color: #fff;
+    font-size: 14.5px; font-weight: 800; letter-spacing: 0.01em;
+    box-shadow: 0 3px 12px rgba(14,124,102,0.35);
+  }
+  #a-go:hover { filter: brightness(1.08); }
+  .a-switch { font-size: 13px; color: var(--ink-2); margin-top: 16px; }
+  .a-switch a { font-weight: 700; }
+  .a-note { font-size: 11.5px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
   #flash-card {
     position: relative; width: min(520px, 100%); background: var(--surface);
     border: 1px solid var(--line); border-radius: 16px; padding: 28px;
@@ -533,7 +586,7 @@
       <span class="streak-chip" id="streak-chip" style="display:none"></span>
       <button id="auth-btn" style="display:none" title="Sync your progress across devices">Sign in</button>
       <button id="pomo-btn" title="Pomodoro: 25 min focus, 5 min break">Focus 25/5</button>
-      <button id="timer-btn" title="Start / pause the study timer">0m</button>
+      <button id="timer-btn" title="Start / pause the study timer"><span class="tb-ic"></span><span class="tb-t">0m</span></button>
       <button id="theme-btn" title="Toggle light / dark mode">🌙</button>
       <span id="status"></span>
     </div>
@@ -550,15 +603,17 @@
 <div id="side-veil"></div>
 <div id="flash" hidden><div id="flash-card"><button id="flash-x" data-flash="close" title="Close">✕</button><div id="flash-body"></div></div></div>
 <div id="auth" hidden><div id="auth-card"><button id="auth-x" title="Close">✕</button>
-  <div class="fmeta">Sync progress across devices</div>
-  <p class="fq">Sign in or create an account</p>
-  <input id="a-email" type="email" placeholder="Email" autocomplete="email">
-  <input id="a-pass" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
-  <div class="fbtns">
-    <button class="mini-btn" id="a-signup">Create account</button>
-    <button class="cta small" id="a-signin">Sign in</button>
-  </div>
-  <p class="empty" style="margin-top:12px">Your topics, solved problems, study time, XP and achievements sync automatically once signed in. Without an account everything still works - it just stays on this device.</p>
+  <div class="a-logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M13 2 3 14h7l-1 8 11-13h-8l1-7z"/></svg></div>
+  <h2 id="a-title">Welcome back</h2>
+  <p class="a-sub" id="a-sub">Sign in and your progress follows you to every device.</p>
+  <label class="a-lbl" for="a-email">Email</label>
+  <input id="a-email" type="email" placeholder="you@example.com" autocomplete="email">
+  <label class="a-lbl" for="a-pass">Password</label>
+  <input id="a-pass" type="password" placeholder="8+ characters" autocomplete="current-password">
+  <p id="a-err" hidden></p>
+  <button id="a-go">Sign in</button>
+  <p class="a-switch">New here? <a href="#" id="a-toggle">Create a free account</a></p>
+  <p class="a-note">No account needed to use the course - it just keeps progress on this device only.</p>
 </div></div>
 <div id="toast"></div>
 <canvas id="confetti"></canvas>
@@ -921,18 +976,27 @@ function pomoNext() {
     beep(); toast('Break over - next 25 minute focus block started.');
   }
 }
+const ICON_PLAY = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+let tbState = '';
 function timerLabel() {
   const btn = $('timer-btn');
+  let text;
   if (pomoMode && (timerOn || pomoPhase === 'break')) {
     const rem = Math.max(0, Math.round((pomoEnd - Date.now()) / 1000));
-    btn.textContent = (pomoPhase === 'break' ? 'Break ' : '') +
-      Math.floor(rem / 60) + ':' + String(rem % 60).padStart(2, '0') +
-      (timerOn ? ' ⏸' : pomoPhase === 'break' ? '' : ' ▶');
+    text = (pomoPhase === 'break' ? 'Break · ' : '') +
+      Math.floor(rem / 60) + ':' + String(rem % 60).padStart(2, '0');
   } else {
     const t = dayTotal(iso(new Date())) + (timerOn ? Math.round((Date.now() - lastTick) / 1000) : 0);
-    btn.textContent = fmtT(t) + (timerOn ? ' ⏸' : ' ▶');
+    text = fmtT(t);
   }
-  btn.classList.toggle('on', timerOn);
+  btn.querySelector('.tb-t').textContent = text;
+  const st = timerOn ? 'on' : 'off';
+  if (st !== tbState) {
+    tbState = st;
+    btn.querySelector('.tb-ic').innerHTML = timerOn ? ICON_PAUSE : ICON_PLAY;
+    btn.classList.toggle('on', timerOn);
+  }
 }
 setInterval(() => {
   if (timerOn && Date.now() - lastTick > 30000) timerFlush();
@@ -1733,8 +1797,17 @@ if (SB_URL && SB_KEY && window.supabase) {
   $('auth-btn').style.display = '';
   sb.auth.onAuthStateChange((ev, session) => {
     sbUser = (session && session.user) || null;
-    $('auth-btn').textContent = sbUser ? sbUser.email.split('@')[0] : 'Sign in';
-    $('auth-btn').title = sbUser ? 'Signed in as ' + sbUser.email + ' - click to sign out' : 'Sync your progress across devices';
+    const btn = $('auth-btn');
+    if (sbUser) {
+      const name = sbUser.email.split('@')[0];
+      btn.innerHTML = '<span class="av">' + esc(name[0]) + '</span><span>' + esc(name) + '</span>';
+      btn.classList.add('in');
+      btn.title = 'Signed in as ' + sbUser.email + ' - syncing. Click to sign out.';
+    } else {
+      btn.textContent = 'Sign in';
+      btn.classList.remove('in');
+      btn.title = 'Sync your progress across devices';
+    }
     if (ev === 'SIGNED_IN') cloudPull();
   });
   setInterval(() => cloudPush(false), 20000);
@@ -1745,18 +1818,36 @@ if (SB_URL && SB_KEY && window.supabase) {
     else $('auth').hidden = false;
   });
   $('auth-x').addEventListener('click', () => { $('auth').hidden = true; });
-  const authGo = async kind => {
+
+  let authMode = 'in';
+  const authErr = msg => { const el = $('a-err'); el.textContent = msg; el.hidden = !msg; };
+  $('a-toggle').addEventListener('click', e => {
+    e.preventDefault();
+    authMode = authMode === 'in' ? 'up' : 'in';
+    $('a-title').textContent = authMode === 'in' ? 'Welcome back' : 'Create your account';
+    $('a-sub').textContent = authMode === 'in'
+      ? 'Sign in and your progress follows you to every device.'
+      : 'Free forever. Your XP, streaks and solved problems, on every device.';
+    $('a-go').textContent = authMode === 'in' ? 'Sign in' : 'Create account';
+    $('a-toggle').textContent = authMode === 'in' ? 'Create a free account' : 'Sign in instead';
+    $('a-toggle').previousSibling.textContent = authMode === 'in' ? 'New here? ' : 'Already have an account? ';
+    authErr('');
+  });
+  const authGo = async () => {
     const email = $('a-email').value.trim(), password = $('a-pass').value;
-    if (!email || password.length < 8) { toast('Enter your email and a password of 8+ characters.'); return; }
-    const { error } = kind === 'up'
+    if (!email) { authErr('Enter your email address.'); return; }
+    if (password.length < 8) { authErr('Password needs at least 8 characters.'); return; }
+    authErr('');
+    $('a-go').textContent = '...';
+    const { error } = authMode === 'up'
       ? await sb.auth.signUp({ email, password })
       : await sb.auth.signInWithPassword({ email, password });
-    if (error) { toast(error.message); return; }
+    $('a-go').textContent = authMode === 'in' ? 'Sign in' : 'Create account';
+    if (error) { authErr(error.message); return; }
     $('auth').hidden = true;
   };
-  $('a-signin').addEventListener('click', () => authGo('in'));
-  $('a-signup').addEventListener('click', () => authGo('up'));
-  $('a-pass').addEventListener('keydown', e => { if (e.key === 'Enter') authGo('in'); });
+  $('a-go').addEventListener('click', authGo);
+  $('a-pass').addEventListener('keydown', e => { if (e.key === 'Enter') authGo(); });
 }
 </script>
 </body>
