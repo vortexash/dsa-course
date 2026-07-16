@@ -360,6 +360,37 @@
   #error { display: none; margin: 24px; border-left: 4px solid var(--warn); }
   #error code { background: var(--brand-soft); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 
+  /* ─ motion ─ */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  #main > * { animation: fadeUp .4s cubic-bezier(.2,.7,.3,1) both; }
+  #main > *:nth-child(2) { animation-delay: .05s; }
+  #main > *:nth-child(3) { animation-delay: .1s; }
+  #main > *:nth-child(4) { animation-delay: .15s; }
+  #main > *:nth-child(5) { animation-delay: .2s; }
+  #main > *:nth-child(6) { animation-delay: .25s; }
+  #main > *:nth-child(n+7) { animation-delay: .3s; }
+  .mods .mod-card { animation: fadeUp .45s cubic-bezier(.2,.7,.3,1) both; }
+  .mods .mod-card:nth-child(2) { animation-delay: .06s; }
+  .mods .mod-card:nth-child(3) { animation-delay: .12s; }
+  .mods .mod-card:nth-child(4) { animation-delay: .18s; }
+  .mods .mod-card:nth-child(5) { animation-delay: .24s; }
+  .mods .mod-card:nth-child(6) { animation-delay: .3s; }
+  .fill, .mod-bar i { transform-origin: left; animation: growX .7s cubic-bezier(.2,.7,.3,1) both; }
+  .tbar { transform-origin: bottom; animation: growY .6s cubic-bezier(.2,.7,.3,1) both; }
+  .tcol:nth-child(2) .tbar { animation-delay: .05s; } .tcol:nth-child(3) .tbar { animation-delay: .1s; }
+  .tcol:nth-child(4) .tbar { animation-delay: .15s; } .tcol:nth-child(5) .tbar { animation-delay: .2s; }
+  .tcol:nth-child(6) .tbar { animation-delay: .25s; } .tcol:nth-child(7) .tbar { animation-delay: .3s; }
+  .card, .stat, .mod-card, .nav-btn { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+  .stat:hover, .mod-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16,24,40,0.09); }
+  button:active, .cta:active, .lesson:active, .link-list a:active { transform: scale(.97); }
+  .lesson, .side-home, .vtab, .badge, .mini-btn { transition: background .15s ease, color .15s ease, border-color .15s ease; }
+  #ring-fill { transition: stroke-dasharray 1s cubic-bezier(.2,.7,.3,1); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
   /* ─ mobile ─ */
   @media (max-width: 920px) {
     #layout { grid-template-columns: 1fr; }
@@ -983,8 +1014,8 @@ function homeView() {
   const ring =
     '<div class="ring-box"><svg width="130" height="130">' +
     '<circle cx="65" cy="65" r="' + R + '" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="10"/>' +
-    '<circle cx="65" cy="65" r="' + R + '" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" ' +
-    'stroke-dasharray="' + (C * pct / 100) + ' ' + C + '"/></svg>' +
+    '<circle id="ring-fill" cx="65" cy="65" r="' + R + '" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" ' +
+    'stroke-dasharray="0 ' + C + '" data-target="' + (C * pct / 100) + ' ' + C + '"/></svg>' +
     '<div class="pct">' + pct + '%<small>complete</small></div></div>';
 
   const counts = {};
@@ -1086,6 +1117,29 @@ function renderMain() {
     }
   }
   $('main').innerHTML = homeView();
+  // sweep the progress ring in, and count the stat numbers up
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const ring = $('ring-fill');
+    if (ring) ring.setAttribute('stroke-dasharray', ring.dataset.target);
+  }));
+  countUp();
+}
+
+// animate pure-number stat values from 0 to their target
+function countUp() {
+  document.querySelectorAll('.stat .v').forEach(el => {
+    const first = el.firstChild;
+    if (!first || first.nodeType !== 3) return;
+    const target = parseInt(first.textContent, 10);
+    if (!Number.isFinite(target) || String(target) !== first.textContent.trim() || target === 0) return;
+    const t0 = performance.now(), dur = 600;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur);
+      first.textContent = Math.round(target * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
 }
 
 // ── local progress: cycle status, export updated progress.md ──
