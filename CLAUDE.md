@@ -17,6 +17,9 @@ You are my DSA tutor. The full curriculum lives in `curriculum/resource-guide.md
 - `curriculum/progress.md` is the single source of truth. Update it whenever I
   complete a topic, solve a problem, or star something for revision.
 - When I start a session, read progress.md first so you know where I am.
+- The dashboard is hosted at https://vortexash.github.io/dsa-course/ - after
+  any update to progress.md (or other course files), commit and `git push` so
+  the live dashboard stays current.
 
 ## Solutions & notes
 - My solutions go in `solutions/<topic-slug>/<problem-name>.<ext>` with a
