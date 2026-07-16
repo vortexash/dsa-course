@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Mastery - Course</title>
+<style>
+  :root {
+    color-scheme: light;
+    --brand:       #4f46e5;
+    --brand-2:     #7c3aed;
+    --brand-soft:  #eef2ff;
+    --page:        #f6f7fb;
+    --surface:     #ffffff;
+    --ink:         #101828;
+    --ink-2:       #475467;
+    --muted:       #98a2b3;
+    --line:        #eaecf0;
+    --good:        #12b76a;
+    --good-soft:   #ecfdf3;
+    --good-text:   #027a48;
+    --warn:        #f79009;
+    --warn-soft:   #fffaeb;
+    --side-bg:     #ffffff;
+    --side-ink:    #344054;
+    --side-strong: #101828;
+    --side-muted:  #98a2b3;
+    --side-line:   #eaecf0;
+    --side-sel:    #eef2ff;
+    --side-sel-ink:#4f46e5;
+    --side-hover:  rgba(16,24,40,0.04);
+    --side-track:  #eaecf0;
+    --side-st:     #d0d5dd;
+    --shadow:      0 1px 3px rgba(16,24,40,0.07), 0 1px 2px rgba(16,24,40,0.04);
+  }
+  /* dark theme: applied by OS preference (unless user forced light) or by the toggle */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --brand:       #818cf8;
+      --brand-2:     #a78bfa;
+      --brand-soft:  #1e2340;
+      --page:        #0b1220;
+      --surface:     #111a2b;
+      --ink:         #f2f4f7;
+      --ink-2:       #b6bfcd;
+      --muted:       #667085;
+      --line:        #1f2b40;
+      --good:        #32d583;
+      --good-soft:   #0f2a1e;
+      --good-text:   #32d583;
+      --warn:        #fdb022;
+      --warn-soft:   #2a2210;
+      --side-bg:     #0a0f1c;
+      --side-ink:    #d0d5dd;
+      --side-strong: #ffffff;
+      --side-muted:  #667085;
+      --side-line:   rgba(255,255,255,0.08);
+      --side-sel:    rgba(79,70,229,0.35);
+      --side-sel-ink:#ffffff;
+      --side-hover:  rgba(255,255,255,0.06);
+      --side-track:  rgba(255,255,255,0.09);
+      --side-st:     #344054;
+      --shadow:      none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --brand:       #818cf8;
+    --brand-2:     #a78bfa;
+    --brand-soft:  #1e2340;
+    --page:        #0b1220;
+    --surface:     #111a2b;
+    --ink:         #f2f4f7;
+    --ink-2:       #b6bfcd;
+    --muted:       #667085;
+    --line:        #1f2b40;
+    --good:        #32d583;
+    --good-soft:   #0f2a1e;
+    --good-text:   #32d583;
+    --warn:        #fdb022;
+    --warn-soft:   #2a2210;
+    --side-bg:     #0a0f1c;
+    --shadow:      none;
+  }
+  #theme-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 99px; width: 34px; height: 34px; font-size: 15px; line-height: 1;
+    display: grid; place-items: center; flex: none;
+  }
+  #theme-btn:hover { border-color: var(--brand); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--page); color: var(--ink); }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  button { font: inherit; cursor: pointer; }
+
+  #layout { display: grid; grid-template-columns: 296px 1fr; min-height: 100vh; }
+  @media (max-width: 920px) {
+    #layout { grid-template-columns: 1fr; }
+    #side { position: static; max-height: none; height: auto; }
+  }
+
+  /* ═══ SIDEBAR ═══════════════════════════════════ */
+  #side {
+    background: var(--side-bg); color: var(--side-ink);
+    border-right: 1px solid var(--side-line);
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    padding-bottom: 40px; scrollbar-width: thin; scrollbar-color: var(--side-st) transparent;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 20px 20px 16px; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 9px; flex: none;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display: grid; place-items: center; font-size: 17px; color: #fff;
+  }
+  .brand b { font-size: 15px; color: var(--side-strong); letter-spacing: 0.01em; }
+  .brand span { display: block; font-size: 11px; color: var(--side-muted); margin-top: 1px; }
+
+  .side-prog { padding: 0 20px 14px; border-bottom: 1px solid var(--side-line); }
+  .side-prog .lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--side-muted); margin-bottom: 6px; }
+  .side-prog .lbl b { color: var(--side-strong); font-variant-numeric: tabular-nums; }
+  .track { height: 7px; background: var(--side-track); border-radius: 99px; overflow: hidden; }
+  .track .fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); transition: width .4s; }
+
+  .side-home {
+    display: flex; align-items: center; gap: 10px; margin: 10px 12px 4px;
+    padding: 9px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 600; color: var(--side-strong); cursor: pointer;
+  }
+  .side-home:hover { background: var(--side-hover); }
+  .side-home.sel { background: var(--side-sel); color: var(--side-sel-ink); }
+
+  details.mod { border-bottom: 1px solid var(--side-line); }
+  details.mod > summary {
+    list-style: none; cursor: pointer; padding: 13px 20px 13px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  details.mod > summary::-webkit-details-marker { display: none; }
+  details.mod > summary:hover { background: var(--side-hover); }
+  .mod-info { flex: 1; min-width: 0; }
+  .mod-kicker { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--side-muted); }
+  .mod-name { font-size: 13px; font-weight: 600; color: var(--side-strong); margin: 2px 0 6px; line-height: 1.3; }
+  .mod-bar { height: 4px; background: var(--side-track); border-radius: 99px; overflow: hidden; }
+  .mod-bar i { display: block; height: 100%; background: var(--good); border-radius: 99px; }
+  .mod-count { font-size: 11px; color: var(--side-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .mod-caret { color: var(--side-muted); font-size: 10px; transition: transform .15s; flex: none; }
+  details.mod[open] > summary .mod-caret { transform: rotate(90deg); }
+
+  .lesson {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px 8px 18px; margin: 1px 8px; border-radius: 8px;
+    font-size: 13px; line-height: 1.35; cursor: pointer; color: var(--side-ink);
+  }
+  .lesson:hover { background: var(--side-hover); }
+  .lesson.sel { background: var(--side-sel); color: var(--side-sel-ink); }
+  .lesson .st {
+    flex: none; width: 20px; height: 20px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 10.5px;
+    border: 1.5px solid var(--side-st); color: var(--side-muted);
+  }
+  .lesson.done .st    { background: var(--good); border-color: var(--good); color: #fff; }
+  .lesson.active .st  { border-color: var(--brand); color: var(--brand); }
+  .lesson.starred .st { border-color: var(--warn); color: var(--warn); }
+  .lesson.done { color: var(--side-muted); }
+  .lesson .star { margin-left: auto; font-size: 11px; }
+
+  /* ═══ MAIN ══════════════════════════════════════ */
+  #main-wrap { min-width: 0; }
+  #topbar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+    padding: 12px 32px;
+  }
+  #crumb { font-size: 13px; color: var(--ink-2); }
+  #crumb b { color: var(--ink); font-weight: 600; }
+  .streak-chip {
+    margin-left: auto; font-size: 12.5px; font-weight: 600; white-space: nowrap;
+    background: var(--warn-soft); color: var(--warn); border-radius: 99px; padding: 5px 12px;
+  }
+  #status { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  #main { padding: 28px 32px 90px; max-width: 980px; }
+
+  /* topic page */
+  .t-head { margin-bottom: 20px; }
+  .t-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); margin-bottom: 6px; }
+  .t-title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .t-title-row h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 99px; white-space: nowrap; }
+  .badge.todo    { background: var(--brand-soft); color: var(--brand); }
+  .badge.active  { background: var(--brand-soft); color: var(--brand); }
+  .badge.done    { background: var(--good-soft); color: var(--good-text); }
+  .badge.starred { background: var(--warn-soft); color: var(--warn); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px;
+  }
+  .card > h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+  .vtabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .vtab {
+    font-size: 12.5px; font-weight: 600; padding: 6px 14px; border-radius: 99px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  }
+  .vtab.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .player { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; }
+  .player iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  .learn-body { font-size: 14.5px; line-height: 1.75; color: var(--ink-2); }
+  .learn-body b { color: var(--ink); }
+
+  /* study-plan stepper */
+  .step { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .step:last-child { border-bottom: none; padding-bottom: 0; }
+  .step:first-child { padding-top: 0; }
+  .step .n {
+    flex: none; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--brand-soft); color: var(--brand);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  }
+  .step .tx { font-size: 14px; line-height: 1.65; color: var(--ink-2); padding-top: 4px; }
+  .step .tx b { color: var(--ink); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+  .link-list a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 12px; margin: 0 -12px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 500; color: var(--ink);
+  }
+  .link-list a:hover { background: var(--brand-soft); text-decoration: none; color: var(--brand); }
+  .link-list .ico { flex: none; width: 30px; height: 30px; border-radius: 8px; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-size: 14px; }
+
+  .nav-row { display: flex; justify-content: space-between; gap: 14px; margin-top: 26px; }
+  .nav-btn {
+    display: block; max-width: 46%; text-align: left; line-height: 1.45;
+    padding: 13px 18px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-size: 14px; font-weight: 600;
+    box-shadow: var(--shadow);
+  }
+  .nav-btn:hover { border-color: var(--brand); color: var(--brand); }
+  .nav-btn .dir { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .nav-btn.next { margin-left: auto; text-align: right; }
+  .nav-btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .nav-btn.primary .dir { color: rgba(255,255,255,0.75); }
+  .nav-btn.primary:hover { filter: brightness(1.08); color: #fff; }
+
+  /* ═══ OVERVIEW ══════════════════════════════════ */
+  .hero {
+    border-radius: 16px; padding: 28px; margin-bottom: 22px; color: #fff;
+    background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 60%, #9333ea 100%);
+    display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+  }
+  .hero .hi { flex: 1; min-width: 240px; }
+  .hero .kick { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; margin-bottom: 8px; }
+  .hero h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .hero p { font-size: 14px; opacity: 0.85; margin-bottom: 18px; }
+  .cta {
+    display: inline-block; background: #fff; color: #4f46e5; font-weight: 700; font-size: 14px;
+    border: none; border-radius: 10px; padding: 12px 22px;
+  }
+  .cta:hover { transform: translateY(-1px); }
+  .ring-box { display: grid; place-items: center; position: relative; }
+  .ring-box svg { transform: rotate(-90deg); }
+  .ring-box .pct { position: absolute; font-size: 20px; font-weight: 700; }
+  .ring-box .pct small { display: block; font-size: 10px; font-weight: 600; opacity: 0.8; text-align: center; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 22px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px; }
+  .stat .ic { width: 40px; height: 40px; flex: none; border-radius: 10px; display: grid; place-items: center; font-size: 18px; background: var(--brand-soft); }
+  .stat .v { font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .stat .l { font-size: 12px; color: var(--ink-2); }
+
+  .sec-title { font-size: 17px; font-weight: 700; margin: 26px 0 14px; }
+  .mods { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
+  .mod-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
+  .mod-card .kick { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .mod-card h4 { font-size: 15px; font-weight: 700; line-height: 1.35; }
+  .mod-card .meta { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .mod-card .track { background: var(--line); }
+  .mod-card button {
+    margin-top: 4px; align-self: flex-start;
+    background: var(--brand-soft); color: var(--brand); border: none;
+    font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 8px;
+  }
+  .mod-card button:hover { background: var(--brand); color: #fff; }
+  .mod-card.complete button { background: var(--good-soft); color: var(--good-text); }
+
+  #activity { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 12px); gap: 3px; justify-content: start; }
+  #activity .day { width: 12px; height: 12px; border-radius: 3px; background: var(--line); }
+  .act-note { font-size: 11px; color: var(--muted); margin-top: 10px; }
+  .plain li { list-style: none; font-size: 13.5px; padding: 8px 0; border-bottom: 1px solid var(--line); line-height: 1.5; }
+  .plain li:last-child { border-bottom: none; }
+  .plain .date { color: var(--muted); font-size: 12px; margin-right: 8px; font-variant-numeric: tabular-nums; }
+  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+
+  #error { display: none; margin: 24px; border-left: 4px solid var(--warn); }
+  #error code { background: var(--brand-soft); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="card" id="error">
+  <h3>Can't read progress.md</h3>
+  <p style="font-size:14px; line-height:1.6">
+    This page reads <code>curriculum/progress.md</code> live, so it must be served over HTTP.<br>
+    From the <b>dsa-course</b> folder run: <code>python -m http.server 8000</code>
+    then open <code>http://localhost:8000/dashboard.html</code> - or just double-click <code>dashboard.bat</code>.
+  </p>
+</div>
+
+<div id="layout" style="display:none">
+  <nav id="side"></nav>
+  <div id="main-wrap">
+    <div id="topbar">
+      <span id="crumb"></span>
+      <span class="streak-chip" id="streak-chip" style="display:none"></span>
+      <button id="theme-btn" title="Toggle light / dark mode">🌙</button>
+      <span id="status"></span>
+    </div>
+    <main id="main"></main>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ── light/dark toggle (persisted; defaults to OS preference) ──
+const effTheme = () => document.documentElement.dataset.theme ||
+  (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('dsa-theme', t);
+  $('theme-btn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+const savedTheme = localStorage.getItem('dsa-theme');
+if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+document.addEventListener('DOMContentLoaded', () => {
+  $('theme-btn').textContent = effTheme() === 'dark' ? '☀️' : '🌙';
+  $('theme-btn').addEventListener('click', () => applyTheme(effTheme() === 'dark' ? 'light' : 'dark'));
+});
+
+// markdown-ish text → safe HTML: **bold**, bare URLs → short host links
+function linkify(md) {
+  let s = esc(md).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  return s.replace(/https?:\/\/[^\s<)]+/g, u => {
+    const url = u.replace(/[.,;:]+$/, ''), tail = u.slice(url.length);
+    const host = url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + host + ' ↗</a>' + tail;
+  });
+}
+
+// Embedded course videos per topic - every entry starts at a TOPIC-SPECIFIC video
+// or dedicated playlist. v = single video, p = playlist.
+// Topic 8 has no embed: Striver has no strings playlist; the A2Z sheet rows carry
+// per-problem videos instead. Topic 25 is read-only by design.
+const RECUR = 'PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9'; // Striver recursion series
+const TREES = 'PLgUwDviBIf0q8Hkd7bK2Bpryj2xVJk8Vk'; // Striver tree series
+const VIDEOS = {
+  1:  [{l:'Striver - Time & Space Complexity', v:'FPu9Uld7W-E'}, {l:'Abdul Bari - Asymptotic Notations', v:'A03oI0znAoc'}],
+  2:  [{l:'Striver - Basic Maths for DSA (digits, GCD)', v:'1xNbjMdbjug'}],
+  3:  [{l:'Striver - Intro to Recursion', v:'yVdKa8dnKiE'}, {l:'Recursion problems', v:'un6PLygfXrA'}, {l:'Full recursion playlist', p:RECUR}, {l:'freeCodeCamp - Recursion full course', v:'IJDJ0kBx2LM'}],
+  4:  [{l:'Striver - Hashing | Maps | Collisions', v:'KEs5UyBJ39g'}],
+  5:  [{l:'Striver - Sorting Pt 1 (selection/bubble/insertion)', v:'HGk_ypEuS24'}, {l:'Striver - Merge Sort', v:'ogjf7ORKfd8'}, {l:'Abdul Bari - Merge Sort', v:'mB5HXBb_HY8'}],
+  6:  [{l:'Striver - Arrays playlist', p:'PLgUwDviBIf0rENwdL0nEH0uGom9no0nyB'}],
+  7:  [{l:'Striver - Binary Search (BS-1)', v:'MHf6awe89xw'}, {l:'Aditya Verma - Binary Search', p:'PL_z_8CaSLPWeYfhtuKHj-9MpYb6XQJ_f2'}, {l:'Errichto - Binary Search lecture', v:'GU7DpgHINWQ'}],
+  9:  [{l:'Striver - Linked List L1 (intro)', v:'Nq7ok-OyEpg'}],
+  10: [{l:'Striver - Recursion & Backtracking', p:RECUR}],
+  11: [{l:'Striver - Bit Manipulation playlist', p:'PLgUwDviBIf0rnqh8QsJaHyIX7KUiaPUv7'}],
+  12: [{l:'Striver - Stack & Queue (L16 entry)', v:'NwBvene4Imo'}, {l:'Aditya Verma - Stacks', p:'PL_z_8CaSLPWdeOezg68SKkeLN4-T_jNHd'}],
+  13: [{l:'Striver - 2 Pointers & Sliding Window playlist', p:'PLgUwDviBIf0q7vrFA_HEWcqRqMpCXzYAL'}, {l:'Aditya Verma - Sliding Window', p:'PL_z_8CaSLPWeM8BDJmIYDaoQ5zuwyxnfj'}],
+  14: [{l:'Aditya Verma - Heaps playlist', p:'PL_z_8CaSLPWdtY9W22VjnPxG30CXNZpI9'}],
+  15: [{l:'Striver - Greedy playlist', p:'PLgUwDviBIf0rF1w2Koyh78zafB0cz7tea'}, {l:'Abdul Bari - Greedy Method intro', v:'ARvQcqJ_-NY'}],
+  16: [{l:'Striver - Tree series', p:TREES}],
+  17: [{l:'Striver - BST (from L39)', v:'p7-9UvDQZ3w'}, {l:'Full tree series', p:TREES}],
+  18: [{l:'Striver - Graph series', p:'PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn'}, {l:'G-1 Intro', v:'M3_pLsDdeuU'}, {l:'William Fiset - Graph Theory', p:'PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P'}],
+  19: [{l:'Striver - Graph series (G-27 onward)', p:'PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn'}, {l:'William Fiset - Graph Theory', p:'PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P'}],
+  20: [{l:'Striver - DP series (~56 videos)', p:'PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY'}, {l:'Aditya Verma - DP patterns', p:'PL_z_8CaSLPWekqhdCPmFohncHwz8TY2Go'}, {l:'freeCodeCamp - DP course (Alvin)', v:'oBt53YbR9Kk'}],
+  21: [{l:'Striver - Tries', p:'PLgUwDviBIf0pcIDCZnxhv0LkHf5KzG9zp'}],
+  22: [{l:'Abdul Bari - KMP algorithm (LPS array)', v:'V5-7GzOfADQ'}],
+  23: [{l:'Striver - Segment Tree: Build & Query', v:'-dUiRtJ8ot0'}, {l:'Striver - Lazy Propagation', v:'rwXVCELcrqU'}, {l:'Tushar Roy - Lazy Propagation', v:'xuoQdt5pHj0'}],
+  24: [{l:'William Fiset - Data Structures course (incl. Fenwick)', v:'RBSGKlAvoiM'}],
+  26: [{l:'CodeNCode - Number Theory course', p:'PLauivoElc3giVROwL-6g9hO-LlSen_NaV'}, {l:'Number Theory for CP playlist', p:'PLX0iyO9CrCF0rbmnISfztkV7v7wijLsgj'}],
+  27: [{l:'Combinatorics for CP playlist', p:'PLk_DdB3uhk2AQalRT2sFhEtatiwaik_YJ'}],
+};
+const yt = s => s.v ? 'https://www.youtube-nocookie.com/embed/' + s.v
+                    : 'https://www.youtube-nocookie.com/embed/videoseries?list=' + s.p;
+
+// Direct practice-problem links per topic.
+// Topics 1 & 25 have no problem sets by design (complexity habit / revision-only).
+const SHEET = 'https://takeuforward.org/dsa/strivers-a2z-sheet-learn-dsa-a-to-z';
+const NC = 'https://neetcode.io/roadmap', CSES = 'https://cses.fi/problemset/';
+const LCT = 'https://leetcode.com/tag/';
+const PRACTICE = {
+  2:  [{t:'A2Z Step 1 - maths rows', u:SHEET}, {t:'LeetCode - math tag', u:LCT+'math/'}, {t:'Project Euler - math problem classics', u:'https://projecteuler.net/archives'}],
+  3:  [{t:'A2Z Step 1 - recursion rows', u:SHEET}, {t:'LeetCode - recursion tag', u:LCT+'recursion/'}],
+  4:  [{t:'A2Z Step 1 - hashing rows', u:SHEET}, {t:'LeetCode - hash-table tag', u:LCT+'hash-table/'}],
+  5:  [{t:'A2Z Step 2 - all 6 sorts', u:SHEET}, {t:'LeetCode - sorting tag', u:LCT+'sorting/'}],
+  6:  [{t:'A2Z Step 3 (~40 rows)', u:SHEET}, {t:'NeetCode - Arrays & Hashing', u:NC}, {t:'LeetCode - array tag', u:LCT+'array/'}],
+  7:  [{t:'A2Z Step 4 (~32 rows)', u:SHEET}, {t:'NeetCode - Binary Search', u:NC}, {t:'LeetCode - binary-search tag', u:LCT+'binary-search/'}],
+  8:  [{t:'A2Z Step 5 (~15 rows)', u:SHEET}, {t:'LeetCode - string tag', u:LCT+'string/'}],
+  9:  [{t:'A2Z Step 6 (~31 rows)', u:SHEET}, {t:'NeetCode - Linked List', u:NC}, {t:'LeetCode - linked-list tag', u:LCT+'linked-list/'}],
+  10: [{t:'A2Z Step 7 (~25 rows)', u:SHEET}, {t:'NeetCode - Backtracking', u:NC}, {t:'LeetCode - backtracking tag', u:LCT+'backtracking/'}],
+  11: [{t:'A2Z Step 8 (~18 rows)', u:SHEET}, {t:'NeetCode - Bit Manipulation', u:NC}, {t:'LeetCode - bit-manipulation tag', u:LCT+'bit-manipulation/'}],
+  12: [{t:'A2Z Step 9 (~30 rows)', u:SHEET}, {t:'NeetCode - Stack', u:NC}, {t:'LeetCode - monotonic-stack tag', u:LCT+'monotonic-stack/'}],
+  13: [{t:'A2Z Step 10 (~12 rows)', u:SHEET}, {t:'NeetCode - Two Pointers + Sliding Window', u:NC}, {t:'LeetCode - sliding-window tag', u:LCT+'sliding-window/'}],
+  14: [{t:'A2Z Step 11 (~17 rows)', u:SHEET}, {t:'NeetCode - Heap / PQ', u:NC}, {t:'LeetCode - heap tag', u:LCT+'heap-priority-queue/'}],
+  15: [{t:'A2Z Step 12 (~16 rows)', u:SHEET}, {t:'NeetCode - Greedy', u:NC}, {t:'LeetCode - greedy tag', u:LCT+'greedy/'}],
+  16: [{t:'A2Z Step 13 (~39 rows)', u:SHEET}, {t:'NeetCode - Trees', u:NC}, {t:'LeetCode - binary-tree tag', u:LCT+'binary-tree/'}],
+  17: [{t:'A2Z Step 14 (~16 rows)', u:SHEET}, {t:'LeetCode - BST tag', u:LCT+'binary-search-tree/'}],
+  18: [{t:'A2Z Step 15 - first half', u:SHEET}, {t:'NeetCode - Graphs', u:NC}, {t:'CSES - Graph Algorithms', u:CSES}, {t:'LeetCode - graph tag', u:LCT+'graph/'}],
+  19: [{t:'A2Z Step 15 - second half', u:SHEET}, {t:'NeetCode - Advanced Graphs', u:NC}, {t:'CSES - Graph Algorithms', u:CSES}, {t:'LeetCode - union-find tag', u:LCT+'union-find/'}],
+  20: [{t:'A2Z Step 16 (~56 rows)', u:SHEET}, {t:'NeetCode - 1-D & 2-D DP', u:NC}, {t:'CSES - DP section (classic)', u:CSES}, {t:'LeetCode - DP tag', u:LCT+'dynamic-programming/'}],
+  21: [{t:'A2Z Step 17 (~7 rows)', u:SHEET}, {t:'NeetCode - Tries', u:NC}, {t:'LeetCode - trie tag', u:LCT+'trie/'}],
+  22: [{t:'A2Z Step 18 (~9 rows)', u:SHEET}, {t:'LeetCode - string-matching tag', u:LCT+'string-matching/'}],
+  23: [{t:'Codeforces EDU - ITMO Segment Tree course', u:'https://codeforces.com/edu/courses'}, {t:'CSES - Range Queries', u:CSES}, {t:'LeetCode - segment-tree tag', u:LCT+'segment-tree/'}],
+  24: [{t:'CSES - Range Queries', u:CSES}, {t:'LeetCode - BIT tag', u:LCT+'binary-indexed-tree/'}],
+  26: [{t:'CodeChef roadmap - Number theory (27 problems)', u:'https://www.codechef.com/roadmap/data-structures-and-algorithms'}, {t:'CSES - Mathematics section', u:CSES}, {t:'LeetCode - number-theory tag', u:LCT+'number-theory/'}],
+  27: [{t:'CodeChef roadmap - Combinatorics (20 problems)', u:'https://www.codechef.com/roadmap/data-structures-and-algorithms'}, {t:'CSES - Mathematics section', u:CSES}, {t:'LeetCode - combinatorics tag', u:LCT+'combinatorics/'}],
+};
+
+// Hand-picked blogs & tutorials per topic.
+// PDS = pythonds interactive book chapters; PYD = Python stdlib docs.
+const CPA = 'https://cp-algorithms.com/', UG = 'https://usaco.guide/', VA = 'https://visualgo.net/en/';
+const PDS = 'https://runestone.academy/ns/books/published/pythonds/';
+const PYD = 'https://docs.python.org/3/library/';
+const BLOGS = {
+  1:  [{t:'Big-O Cheat Sheet', u:'https://www.bigocheatsheet.com/'}, {t:'NeetCode - Big-O guide', u:'https://blog.neetcode.io/p/prepare-coding-interviews'}],
+  2:  [{t:'CP-Algorithms - Euclid GCD', u:CPA+'algebra/euclid-algorithm.html'}, {t:'CP-Algorithms - Primality tests', u:CPA+'algebra/primality_tests.html'}],
+  3:  [{t:'pythonds - Recursion chapter (runnable)', u:PDS+'Recursion/toctree.html'}, {t:'freeCodeCamp - How recursion works (flowcharts)', u:'https://www.freecodecamp.org/news/how-recursion-works-explained-with-flowcharts-and-a-video-de61f40cb7f9/'}],
+  4:  [{t:'pythonds - Hashing (how dict works inside)', u:PDS+'SortSearch/Hashing.html'}, {t:'GfG - Hashing hub', u:'https://www.geeksforgeeks.org/hashing-data-structure/'}, {t:'collections docs - Counter & defaultdict', u:PYD+'collections.html'}],
+  5:  [{t:'pythonds - Sorting chapter (runnable)', u:PDS+'SortSearch/toctree.html'}, {t:'VisuAlgo - Sorting race', u:VA+'sorting'}, {t:'Sort Visualizer', u:'https://www.sortvisualizer.com/'}],
+  6:  [{t:'USACO Guide - Prefix Sums', u:UG+'silver/prefix-sums'}, {t:'Sean Prashad - LeetCode patterns list', u:'https://seanprashad.com/leetcode-patterns/'}],
+  7:  [{t:'Errichto - the Binary Search blog', u:'https://codeforces.com/blog/entry/67509'}, {t:'USACO Guide - Binary Search', u:UG+'silver/binary-search'}, {t:'bisect docs - Python\'s built-in binary search', u:PYD+'bisect.html'}],
+  8:  [{t:'takeuforward - String articles hub', u:'https://takeuforward.org/blogs/string'}],
+  9:  [{t:'pythonds - build a linked list in Python (runnable)', u:PDS+'BasicDS/toctree.html'}, {t:'Tech Interview Handbook - LL cheatsheet', u:'https://www.techinterviewhandbook.org/algorithms/linked-list/'}],
+  10: [{t:'GfG - Backtracking hub', u:'https://www.geeksforgeeks.org/backtracking-algorithms/'}],
+  11: [{t:'Bit Twiddling Hacks (Stanford)', u:'https://graphics.stanford.edu/~seander/bithacks.html'}, {t:'CP-Algorithms - Bit manipulation', u:CPA+'algebra/bit-manipulation.html'}],
+  12: [{t:'pythonds - Stacks, Queues & Deques (runnable)', u:PDS+'BasicDS/toctree.html'}, {t:'CP-Algorithms - Min stack / queue trick', u:CPA+'data_structures/stack_queue_modification.html'}, {t:'deque docs - O(1) queue for BFS', u:PYD+'collections.html#collections.deque'}],
+  13: [{t:'USACO Guide - Two Pointers', u:UG+'silver/two-pointers'}, {t:'USACO Guide - Sliding Window', u:UG+'gold/sliding-window'}],
+  14: [{t:'pythonds - Priority queues with binary heaps (runnable)', u:PDS+'Trees/PriorityQueueswithBinaryHeaps.html'}, {t:'heapq docs - Python\'s built-in heap', u:PYD+'heapq.html'}, {t:'GfG - Binary heap', u:'https://www.geeksforgeeks.org/binary-heap/'}],
+  15: [{t:'USACO Guide - Greedy with sorting', u:UG+'silver/greedy-sorting'}, {t:'CPH book ch. 6 (Greedy)', u:'https://cses.fi/book.pdf'}],
+  16: [{t:'pythonds - Trees chapter (runnable)', u:PDS+'Trees/toctree.html'}, {t:'Striver - Tree series notes', u:'https://takeuforward.org/data-structure/strivers-tree-series-tree-data-structure'}, {t:'Tech Interview Handbook - tree cheatsheet', u:'https://www.techinterviewhandbook.org/algorithms/tree/'}],
+  17: [{t:'VisuAlgo - BST animation', u:VA+'bst'}],
+  18: [{t:'pythonds - Graphs chapter (runnable)', u:PDS+'Graphs/toctree.html'}, {t:'CP-Algorithms - BFS', u:CPA+'graph/breadth-first-search.html'}, {t:'DFS', u:CPA+'graph/depth-first-search.html'}, {t:'USACO - Graph traversal', u:UG+'silver/graph-traversal'}],
+  19: [{t:'CP-Algorithms - Dijkstra', u:CPA+'graph/dijkstra.html'}, {t:'Kruskal MST', u:CPA+'graph/mst_kruskal.html'}, {t:'DSU', u:CPA+'data_structures/disjoint_set_union.html'}, {t:'SCC', u:CPA+'graph/strongly-connected-components.html'}],
+  20: [{t:'USACO Guide - Intro to DP', u:UG+'gold/intro-dp'}, {t:'Topcoder - DP from Novice to Advanced (classic)', u:'https://www.topcoder.com/thrive/articles/Dynamic%20Programming:%20From%20Novice%20to%20Advanced'}, {t:'functools.cache docs - memoize in one line', u:PYD+'functools.html#functools.cache'}, {t:'CPH book ch. 7 (DP)', u:'https://cses.fi/book.pdf'}],
+  21: [{t:'GfG - Trie insert & search', u:'https://www.geeksforgeeks.org/trie-insert-and-search/'}, {t:'CP-Algorithms - Aho-Corasick', u:CPA+'string/aho_corasick.html'}],
+  22: [{t:'takeuforward - KMP tutorial', u:'https://takeuforward.org/data-structure/kmp-algorithm'}, {t:'CP-Algorithms - Prefix function (KMP)', u:CPA+'string/prefix-function.html'}, {t:'Z-function', u:CPA+'string/z-function.html'}, {t:'String hashing', u:CPA+'string/string-hashing.html'}],
+  23: [{t:'CP-Algorithms - Segment tree', u:CPA+'data_structures/segment_tree.html'}, {t:'HackerEarth - Lazy propagation', u:'https://www.hackerearth.com/practice/notes/segment-tree-and-lazy-propagation/'}, {t:'Codeforces EDU course', u:'https://codeforces.com/edu/courses'}],
+  24: [{t:'CP-Algorithms - Fenwick tree', u:CPA+'data_structures/fenwick.html'}, {t:'VisuAlgo - Fenwick', u:VA+'fenwicktree'}],
+  25: [{t:'CPH book (amortized analysis chapters)', u:'https://cses.fi/book.pdf'}],
+  26: [{t:'CP-Algorithms - Sieve of Eratosthenes', u:CPA+'algebra/sieve-of-eratosthenes.html'}, {t:'Binary exponentiation', u:CPA+'algebra/binary-exp.html'}, {t:'Modular inverse', u:CPA+'algebra/module-inverse.html'}],
+  27: [{t:'CP-Algorithms - Binomial coefficients', u:CPA+'combinatorics/binomial-coefficients.html'}, {t:'Inclusion-exclusion', u:CPA+'combinatorics/inclusion-exclusion.html'}, {t:'USACO Guide - Combinatorics', u:UG+'gold/combo'}, {t:'math.comb & itertools docs', u:PYD+'math.html#math.comb'}],
+};
+
+// Interactive visualizers per topic - see the algorithm actually run.
+// Every URL below returned HTTP 200 in a link check on 2026-07-16.
+// CSV = Georgia Tech CS1332 visualization tool (hashmaps, sorting, stacks/queues,
+// heaps, BST, AVL, tries, KMP/Rabin-Karp, graphs, DP - pick from its menu)
+const CSV = 'https://csvistool.com/';
+const PYT = 'https://pythontutor.com/visualize.html#mode=edit';
+const VISUAL = {
+  1:  [{t:'Big-O growth chart (interactive)', u:'https://www.bigocheatsheet.com/'}, {t:'VisuAlgo - race the sorts to feel O(n²) vs O(n log n)', u:VA+'sorting'}],
+  2:  [{t:'Khan Academy - Euclid GCD, step-by-step visual', u:'https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm'}],
+  3:  [{t:'Recursion Tree Visualizer - paste your function, see the tree', u:'https://recursion.vercel.app/'}, {t:'VisuAlgo - recursion tree/DAG', u:VA+'recursion'}, {t:'Python Tutor - step through your Python line by line', u:PYT}],
+  4:  [{t:'VisuAlgo - hash table & collisions', u:VA+'hashtable'}, {t:'CS1332 tool - HashMaps with chaining/probing', u:CSV}],
+  5:  [{t:'VisuAlgo - all sorts animated + race mode', u:VA+'sorting'}, {t:'Sort Visualizer - run & compare every sort', u:'https://www.sortvisualizer.com/'}, {t:'CS1332 tool - sorting section', u:CSV}],
+  6:  [{t:'Python Tutor - watch your list code execute step by step', u:PYT}],
+  7:  [{t:'HackerEarth - binary search, interactive visual', u:'https://www.hackerearth.com/practice/algorithms/searching/binary-search/visualize/'}, {t:'Penjee - binary vs linear search GIF', u:'https://blog.penjee.com/binary-vs-linear-search-animated-gifs/'}],
+  8:  [{t:'Python Tutor - step through string code', u:PYT}],
+  9:  [{t:'VisuAlgo - linked list operations', u:VA+'list'}, {t:'Python Tutor - SEE the pointers move (best LL tool)', u:PYT}],
+  10: [{t:'Algorithm Visualizer - N-Queens backtracking, animated', u:'https://algorithm-visualizer.org/backtracking/n-queens-problem'}, {t:'Chris Laux - N-Queens step-by-step animation', u:'https://www.chrislaux.com/nqueens'}, {t:'Recursion Tree Visualizer - subsets/combinations trees', u:'https://recursion.vercel.app/'}],
+  11: [{t:'BitwiseCmd - interactive bitwise calculator', u:'https://bitwisecmd.com/'}],
+  12: [{t:'VisuAlgo - stack / queue / deque', u:VA+'list'}, {t:'CS1332 tool - stacks & queues (array and LL)', u:CSV}],
+  13: [{t:'GfG - sliding window, animated walkthrough', u:'https://www.geeksforgeeks.org/window-sliding-technique/'}],
+  14: [{t:'VisuAlgo - binary heap insert/extract', u:VA+'heap'}, {t:'CS1332 tool - heaps & heapsort', u:CSV}],
+  15: [{t:'Algorithm Visualizer - greedy algorithms animated', u:'https://algorithm-visualizer.org/'}],
+  16: [{t:'VisuAlgo - build & traverse binary trees', u:VA+'bst'}, {t:'CS1332 tool - BST operations', u:CSV}],
+  17: [{t:'VisuAlgo - BST insert/delete/search', u:VA+'bst'}, {t:'VisuAlgo - AVL rotations (balance intuition)', u:VA+'avl'}],
+  18: [{t:'VisuAlgo - DFS/BFS animation', u:VA+'dfsbfs'}, {t:'Pathfinding Visualizer - BFS/DFS on a grid you draw', u:'https://clementmihailescu.github.io/Pathfinding-Visualizer/'}, {t:'CS Academy - draw your own graph', u:'https://csacademy.com/app/graph_editor/'}],
+  19: [{t:'VisuAlgo - Dijkstra/Bellman-Ford', u:VA+'sssp'}, {t:'VisuAlgo - Prim/Kruskal MST', u:VA+'mst'}, {t:'VisuAlgo - union-find with path compression', u:VA+'ufds'}, {t:'Pathfinding Visualizer - Dijkstra/A* on a grid', u:'https://clementmihailescu.github.io/Pathfinding-Visualizer/'}],
+  20: [{t:'Algorithm Visualizer - LCS table filling, animated', u:'https://algorithm-visualizer.org/dynamic-programming/longest-common-subsequence'}, {t:'CS1332 tool - dynamic programming section', u:CSV}],
+  21: [{t:'CS1332 tool - Trie insert/search (menu → Tries)', u:CSV}],
+  22: [{t:'CS1332 tool - KMP, Rabin-Karp, Boyer-Moore animations', u:CSV}, {t:'Algorithm Visualizer - string search section', u:'https://algorithm-visualizer.org/'}],
+  23: [{t:'VisuAlgo - segment tree build/query', u:VA+'segmenttree'}],
+  24: [{t:'VisuAlgo - Fenwick tree, lowbit steps', u:VA+'fenwicktree'}],
+  26: [{t:'Wikipedia - the famous sieve animation', u:'https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes'}, {t:'Khan Academy - modular arithmetic, visual intro', u:'https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/what-is-modular-arithmetic'}],
+  27: [{t:'MathsIsFun - interactive Pascal’s triangle', u:'https://www.mathsisfun.com/pascals-triangle.html'}, {t:'MathsIsFun - combinations & permutations, interactive', u:'https://www.mathsisfun.com/combinatorics/combinations-permutations.html'}],
+};
+
+// resource-guide.md → { topics: {num: {detail[], layers[]}}, toolkit: [] }
+function parseGuide(md) {
+  const g = { topics: {}, toolkit: [] };
+  const label = { '🎥':'Watch', '📖':'Read', '👁':'Visualize', '✏':'Practice', '✅':'Solutions' };
+  let cur = null, inToolkit = false;
+  for (const raw of md.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (/^##\s+🧰/u.test(line)) { inToolkit = true; cur = null; continue; }
+    const t = line.match(/^##\s+Topic\s+(\d+)\s*:/);
+    if (t) { cur = { detail: [], layers: [] }; g.topics[t[1]] = cur; inToolkit = false; continue; }
+    if (/^#/.test(line)) { cur = null; inToolkit = false; continue; }
+    if (inToolkit) {
+      const row = line.match(/^\|\s*\d+\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|$/);
+      if (row) g.toolkit.push({ name: row[1].replace(/\*\*/g, ''), desc: row[2], link: row[3] });
+      continue;
+    }
+    if (!cur || !line) continue;
+    const lay = line.match(/^-\s*([🎥📖👁✏✅])️?\s*[A-Z]*\s*:?\s*(.+)$/u);
+    if (lay) cur.layers.push({ icon: lay[1], label: label[lay[1]], text: lay[2] });
+    else cur.detail.push(line.replace(/^\*\*What to understand in detail:\*\*\s*/, ''));
+  }
+  return g;
+}
+
+function parse(md) {
+  const data = { current: null, phases: [], revision: [], sessions: [] };
+  const cur = md.match(/\*\*Currently on:\*\*\s*(.+)/);
+  if (cur) data.current = cur[1].trim();
+
+  let section = '', phase = null;
+  for (const raw of md.split(/\r?\n/)) {
+    const line = raw.trim();
+    const head = line.match(/^##\s+(.+)/);
+    if (head) {
+      const t = head[1].trim();
+      if (/revision queue/i.test(t))      section = 'rev';
+      else if (/session log/i.test(t))    section = 'log';
+      else if (/^phase/i.test(t)) { section = 'phase'; phase = { name: t.replace(/^phase\s*\d+\s*-\s*/i, ''), topics: [] }; data.phases.push(phase); }
+      else section = '';
+      continue;
+    }
+    const item = line.match(/^-\s+(.+)/);
+    if (!item) continue;
+    const body = item[1].trim();
+
+    if (section === 'phase' && phase) {
+      const m = body.match(/^([⬜🟨✅⭐])\s*(?:Topic\s*(\d+)\s*:)?\s*(.+)$/u);
+      if (m) phase.topics.push({
+        status: { '⬜':'todo', '🟨':'active', '✅':'done', '⭐':'starred' }[m[1]],
+        starred: body.includes('⭐'),
+        num: m[2] || '', title: m[3].replace(/⭐/gu, '').trim(),
+      });
+    } else if (section === 'rev') {
+      data.revision.push(body);
+    } else if (section === 'log') {
+      const d = body.match(/\d{4}-\d{2}-\d{2}/);
+      data.sessions.push({ date: d ? d[0] : null, text: body });
+    }
+  }
+  return data;
+}
+
+// local date as YYYY-MM-DD (toISOString is UTC - wrong day in most timezones)
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+
+function streak(dates) {
+  const set = new Set(dates);
+  if (!set.size) return 0;
+  let n = 0, d = new Date();
+  // ponytail: streak = consecutive days ending today or yesterday
+  if (!set.has(iso(d))) d.setDate(d.getDate() - 1);
+  while (set.has(iso(d))) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
+// ── state ───────────────────────────────────────────
+let guide = null, lastMd = '', data = null;
+let sel = localStorage.getItem('dsa-sel') || ''; // topic num, or 'home'
+
+const CHIP = { done: '✓ Completed', active: 'In progress', starred: '★ Revise', todo: 'Not started' };
+const ST_MARK = { done: '✓', active: '▶', starred: '★', todo: '' };
+
+function allTopics() { return data.phases.flatMap(p => p.topics); }
+function curNum() { return (data.current || '').match(/\d+/)?.[0]; }
+
+function select(next) {
+  sel = next;
+  localStorage.setItem('dsa-sel', sel);
+  renderSide(); renderMain(); renderCrumb();
+  window.scrollTo({ top: 0 });
+}
+
+// ── sidebar ─────────────────────────────────────────
+function renderSide() {
+  const cn = curNum();
+  const topics = allTopics();
+  const done = topics.filter(t => t.status === 'done').length;
+  const pct = topics.length ? Math.round(done / topics.length * 100) : 0;
+  const openMods = new Set([...document.querySelectorAll('#side details[open]')].map(d => d.dataset.i));
+  const firstRender = !$('side').innerHTML;
+
+  let html =
+    '<div class="brand"><div class="logo">⚡</div><div><b>DSA Mastery</b>' +
+    '<span>27 topics · 6 modules</span></div></div>' +
+    '<div class="side-prog"><div class="lbl"><span>Course progress</span><b>' + pct + '%</b></div>' +
+    '<div class="track"><div class="fill" style="width:' + pct + '%"></div></div></div>' +
+    '<div class="side-home' + (sel === 'home' ? ' sel' : '') + '" data-go="home">🏠&nbsp; My Dashboard</div>';
+
+  html += data.phases.map((p, i) => {
+    const d = p.topics.filter(t => t.status === 'done').length;
+    const holdsSel = p.topics.some(t => t.num === sel);
+    const holdsCur = p.topics.some(t => t.num === cn);
+    const open = firstRender ? (holdsSel || (sel === 'home' && holdsCur)) : openMods.has(String(i)) || holdsSel;
+    return '<details class="mod" data-i="' + i + '"' + (open ? ' open' : '') + '><summary>' +
+      '<div class="mod-info"><div class="mod-kicker">Module ' + (i + 1) + '</div>' +
+      '<div class="mod-name">' + esc(p.name) + '</div>' +
+      '<div class="mod-bar"><i style="width:' + (p.topics.length ? d / p.topics.length * 100 : 0) + '%"></i></div></div>' +
+      '<span class="mod-count">' + d + '/' + p.topics.length + '</span><span class="mod-caret">▶</span></summary>' +
+      p.topics.map(t =>
+        '<div class="lesson ' + t.status + (sel === t.num ? ' sel' : '') + '" data-go="' + t.num + '">' +
+        '<span class="st">' + (t.num === cn && t.status !== 'done' ? '▶' : ST_MARK[t.status]) + '</span>' +
+        '<span>' + t.num + '. ' + esc(t.title) + '</span>' +
+        (t.starred && t.status !== 'starred' ? '<span class="star">⭐</span>' : '') +
+        '</div>').join('') +
+      '</details>';
+  }).join('');
+  $('side').innerHTML = html;
+}
+
+function renderCrumb() {
+  if (sel === 'home' || !data) { $('crumb').innerHTML = '<b>My Dashboard</b>'; return; }
+  const pi = data.phases.findIndex(p => p.topics.some(t => t.num === sel));
+  const t = allTopics().find(t => t.num === sel);
+  $('crumb').innerHTML = pi >= 0 && t
+    ? 'Module ' + (pi + 1) + ' &nbsp;›&nbsp; <b>' + esc(t.title) + '</b>' : '';
+}
+
+// ── topic page ──────────────────────────────────────
+function topicView(t, phaseName, phaseIdx) {
+  const res = guide && guide.topics[t.num];
+  const vids = VIDEOS[t.num] || [];
+  const vidHtml = vids.length
+    ? '<div class="card"><div class="vtabs">' + vids.map((s, i) =>
+        '<button class="vtab' + (i === 0 ? ' on' : '') + '" data-src="' + yt(s) + '">▶ ' + esc(s.l) + '</button>').join('') +
+      '</div><div class="player" data-src="' + yt(vids[0]) + '"></div></div>'
+    : '';
+  const linkList = arr => '<div class="link-list">' + arr.map(b =>
+    '<a href="' + b.u + '" target="_blank" rel="noopener"><span class="ico">↗</span>' + esc(b.t) + '</a>').join('') + '</div>';
+
+  return '<div class="t-head">' +
+    '<div class="t-kicker">Module ' + (phaseIdx + 1) + ' - ' + esc(phaseName) + '</div>' +
+    '<div class="t-title-row"><h1>' + t.num + '. ' + esc(t.title) + '</h1>' +
+    '<span class="badge ' + t.status + '">' + CHIP[t.status] + '</span></div></div>' +
+    vidHtml +
+    (res && res.detail.length
+      ? '<div class="card"><h3>📚 What you\'ll learn</h3><div class="learn-body">' + res.detail.map(linkify).join('<br>') + '</div></div>'
+      : '') +
+    (res && res.layers.length
+      ? '<div class="card"><h3>🗺️ Study plan</h3>' + res.layers.map((l, i) =>
+          '<div class="step"><span class="n">' + (i + 1) + '</span><div class="tx"><b>' + l.icon + ' ' + l.label + '</b> - ' +
+          linkify(l.text) + '</div></div>').join('') + '</div>'
+      : '') +
+    '<div class="grid2">' +
+    ((VISUAL[t.num] || []).length ? '<div class="card"><h3>👁️ Visualize it</h3>' + linkList(VISUAL[t.num]) + '</div>' : '') +
+    ((PRACTICE[t.num] || []).length ? '<div class="card"><h3>🎯 Solve problems</h3>' + linkList(PRACTICE[t.num]) + '</div>' : '') +
+    ((BLOGS[t.num] || []).length ? '<div class="card"><h3>📖 Extra reading</h3>' + linkList(BLOGS[t.num]) + '</div>' : '') +
+    '</div>';
+}
+
+// ── dashboard (overview) page ───────────────────────
+function homeView() {
+  const topics = allTopics();
+  const done = topics.filter(t => t.status === 'done').length;
+  const active = topics.filter(t => t.status === 'active').length;
+  const starred = topics.filter(t => t.starred).length + data.revision.length;
+  const st = streak(data.sessions.map(s => s.date).filter(Boolean));
+  const pct = topics.length ? Math.round(done / topics.length * 100) : 0;
+  const cn = curNum();
+  const cur = topics.find(t => t.num === cn) || topics.find(t => t.status !== 'done');
+
+  // progress ring
+  const R = 52, C = 2 * Math.PI * R;
+  const ring =
+    '<div class="ring-box"><svg width="130" height="130">' +
+    '<circle cx="65" cy="65" r="' + R + '" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="10"/>' +
+    '<circle cx="65" cy="65" r="' + R + '" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" ' +
+    'stroke-dasharray="' + (C * pct / 100) + ' ' + C + '"/></svg>' +
+    '<div class="pct">' + pct + '%<small>complete</small></div></div>';
+
+  // activity heatmap
+  const counts = {};
+  for (const s of data.sessions) if (s.date) counts[s.date] = (counts[s.date] || 0) + 1;
+  const seq = ['var(--line)', '#c7d2fe', '#818cf8', '#6366f1', '#4f46e5'];
+  const end = new Date(); end.setDate(end.getDate() + (6 - end.getDay()));
+  let cells = '';
+  for (let i = 83; i >= 0; i--) {
+    const d = new Date(end); d.setDate(d.getDate() - i);
+    if (d > new Date()) { cells += '<span class="day" style="visibility:hidden"></span>'; continue; }
+    const key = iso(d);
+    const c = Math.min(counts[key] || 0, 4);
+    cells += '<span class="day" style="background:' + seq[c] + '" title="' + key + ' · ' + (counts[key] || 0) + ' session(s)"></span>';
+  }
+
+  const stat = (ico, v, l) =>
+    '<div class="stat"><div class="ic">' + ico + '</div><div><div class="v">' + v + '</div><div class="l">' + l + '</div></div></div>';
+
+  return '<div class="hero"><div class="hi">' +
+    '<div class="kick">Data Structures &amp; Algorithms</div>' +
+    '<h1>' + (done ? 'Welcome back 👋' : 'Start your DSA journey 🚀') + '</h1>' +
+    '<p>' + (cur ? 'Up next: <b>' + cur.num + '. ' + esc(cur.title) + '</b>' : 'All topics complete - legend! 🏆') + '</p>' +
+    (cur ? '<button class="cta" data-go="' + cur.num + '">' + (done || active ? 'Continue learning →' : 'Start learning →') + '</button>' : '') +
+    '</div>' + ring + '</div>' +
+
+    '<div class="stat-row">' +
+    stat('✅', done + '<span style="font-size:13px;color:var(--muted)">/' + topics.length + '</span>', 'Topics completed') +
+    stat('📘', active, 'In progress') +
+    stat('⭐', starred, 'Marked for revision') +
+    stat('🔥', st, 'Day streak') +
+    '</div>' +
+
+    '<div class="sec-title">Modules</div><div class="mods">' +
+    data.phases.map((p, i) => {
+      const d = p.topics.filter(t => t.status === 'done').length;
+      const complete = d === p.topics.length;
+      const target = p.topics.find(t => t.status === 'active') || p.topics.find(t => t.status !== 'done') || p.topics[0];
+      return '<div class="mod-card' + (complete ? ' complete' : '') + '">' +
+        '<div class="kick">Module ' + (i + 1) + '</div><h4>' + esc(p.name) + '</h4>' +
+        '<div class="meta">' + d + ' / ' + p.topics.length + ' topics · ' + Math.round(d / p.topics.length * 100) + '%</div>' +
+        '<div class="track"><div class="fill" style="width:' + (d / p.topics.length * 100) + '%"></div></div>' +
+        '<button data-go="' + target.num + '">' + (complete ? 'Review ↺' : d || p.topics.some(t => t.status === 'active') ? 'Continue →' : 'Start →') + '</button></div>';
+    }).join('') + '</div>' +
+
+    '<div class="sec-title">Your activity</div><div class="grid2">' +
+    '<div class="card"><h3>📆 Last 12 weeks</h3><div id="activity">' + cells + '</div>' +
+    '<div class="act-note">One square per day · darker = more sessions · ' + data.sessions.length + ' sessions logged</div></div>' +
+    '<div class="card"><h3>⭐ Revision queue</h3><ul class="plain">' +
+    (data.revision.length ? data.revision.map(r => '<li>' + esc(r) + '</li>').join('')
+      : '<li class="empty">Nothing starred - clean slate 🎉</li>') + '</ul></div>' +
+    '</div>' +
+
+    '<div class="grid2">' +
+    '<div class="card"><h3>📝 Session log</h3><ul class="plain">' +
+    (data.sessions.length
+      ? data.sessions.slice().reverse().slice(0, 12).map(s =>
+          '<li>' + (s.date ? '<span class="date">' + s.date + '</span>' : '') +
+          esc(s.text.replace(s.date || '', '').replace(/^\s*[·-]\s*/, '')) + '</li>').join('')
+      : '<li class="empty">No sessions yet - run /today to start</li>') + '</ul></div>' +
+    '<div class="card"><h3>🧰 Master toolkit</h3><ul class="plain">' +
+    (guide ? guide.toolkit.map(r =>
+      '<li><b>' + esc(r.name) + '</b> - ' + linkify(r.desc) + ' · ' + linkify(r.link) + '</li>').join('') : '') +
+    '</ul></div></div>';
+}
+
+function renderMain() {
+  const topics = allTopics();
+  if (sel !== 'home') {
+    const i = topics.findIndex(t => t.num === sel);
+    if (i === -1) { sel = 'home'; }
+    else {
+      const t = topics[i];
+      const pi = data.phases.findIndex(p => p.topics.includes(t));
+      const prev = topics[i - 1], next = topics[i + 1];
+      $('main').innerHTML = topicView(t, data.phases[pi].name, pi) +
+        '<div class="nav-row">' +
+        (prev ? '<button class="nav-btn" data-go="' + prev.num + '"><span class="dir">← Previous</span>' + prev.num + '. ' + esc(prev.title) + '</button>' : '<span></span>') +
+        (next ? '<button class="nav-btn next primary" data-go="' + next.num + '"><span class="dir">Next lesson →</span>' + next.num + '. ' + esc(next.title) + '</button>' : '') +
+        '</div>';
+      loadPlayers();
+      return;
+    }
+  }
+  $('main').innerHTML = homeView();
+}
+
+function renderStreak() {
+  const st = streak(data.sessions.map(s => s.date).filter(Boolean));
+  const chip = $('streak-chip');
+  chip.style.display = st > 0 ? '' : 'none';
+  chip.textContent = '🔥 ' + st + '-day streak';
+}
+
+// lazy-load: only give an iframe to the visible player
+function loadPlayers() {
+  document.querySelectorAll('#main .player:empty').forEach(p => {
+    const f = document.createElement('iframe');
+    f.src = p.dataset.src;
+    f.allowFullscreen = true;
+    f.allow = 'accelerometer; encrypted-media; picture-in-picture';
+    p.appendChild(f);
+  });
+}
+
+document.addEventListener('click', e => {
+  const go = e.target.closest('[data-go]');
+  if (go) { select(go.dataset.go); return; }
+  const b = e.target.closest('.vtab');
+  if (!b) return;
+  b.parentElement.querySelectorAll('.vtab').forEach(x => x.classList.toggle('on', x === b));
+  const p = $('main').querySelector('.player');
+  p.innerHTML = '';
+  p.dataset.src = b.dataset.src;
+  loadPlayers();
+});
+
+async function load() {
+  try {
+    if (!guide) {
+      const g = await fetch('curriculum/resource-guide.md', { cache: 'no-store' });
+      if (g.ok) guide = parseGuide(await g.text());
+    }
+    const res = await fetch('curriculum/progress.md', { cache: 'no-store' });
+    if (!res.ok) throw new Error(res.status);
+    const md = await res.text();
+    if (md !== lastMd) {
+      lastMd = md;
+      data = parse(md);
+      if (!sel) sel = 'home'; // first visit lands on the dashboard
+      // ponytail: full re-render only when progress.md actually changes
+      renderSide(); renderMain(); renderCrumb(); renderStreak();
+    }
+    $('layout').style.display = ''; $('error').style.display = 'none';
+    $('status').textContent = 'live · ' + new Date().toLocaleTimeString();
+  } catch {
+    $('error').style.display = 'block';
+    $('status').textContent = 'disconnected';
+  }
+}
+load();
+setInterval(load, 5000);
+</script>
+</body>
+</html>
